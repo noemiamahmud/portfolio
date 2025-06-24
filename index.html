@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Noemi Mahmud | Portfolio</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <aside class="sidebar">
+    <h2>Contact Me!</h2>
+    <nav>
+      <ul>
+        <li><a href="mailto:noemiamahmud@gmail.com">noemiamahmud@gmail.com</a></li>
+        <li><a href="tel:+13123503485">(312) 350-3485</a></li>
+      </ul>
+    </nav>
+    <div class="resume-section">
+        <h2>View My Full Resume!</h2>
+        <a href="https://docs.google.com/document/d/1D-r0945vgP1EfoXPgDc3hyOo9CGSFyoSdGCAoDNZQMk/edit?tab=t.0" target="_blank">Resume PDF <Link:import></Link:import></a>
+      </div>
+  </aside>
+  <main>
+    <img src="Portfolio_Banner.png" alt="Portfolio Banner" class="banner"/>
+
+    <section class="intro">
+      <p>
+        Welcome to my portfolio! Here, you'll find a curated selection of my latest work in Student Organization involvement, Neuropharmacology Research, Hackathon Competitions, and other Projects.
+        <br><br>
+        I am currently seeking internship opportunities that align with my interests in brain and cognitive science, particularly at the intersection of artificial intelligence and human-computer interaction. I am eager to apply my technical skills and research experience to projects that explore cognition, neural networks, and intelligent systems.
+      </p>
+    </section>
+
+    <section id="internships" class="category">
+        <h2 onclick="toggleDropdown('internship-list')">Internship Experience ▼</h2>
+        <div id="internship-list" class="hidden">
+          <p>
+            As a Laboratory Assistant in the 
+            <a href="https://neuroscience.illinois.edu/gulley-lab" target="_blank">Gulley Laboratory for Behavioral Neuroscience</a>, 
+            I contribute to research investigating the behavioral and neural consequences of repeated psychoactive drug exposure. My work supports studies on intravenous methamphetamine self-administration in adolescent and adult rodent models. I manage and maintain operant chambers, assist in daily experimental preparation, and handle rats with consistency and care, including weighing and transporting them between controlled environments. I also configure behavioral software to initiate and monitor real-time data collection for lever-pressing, reinforcement delivery, and time-locked activity tracking.
+          </p>
+      
+          <p>
+            Through my involvement, I’ve gained hands-on experience in behavioral neuroscience methods—particularly operant conditioning, reinforcement learning, and neuropharmacological protocol execution. I support the lab’s broader goal of understanding developmental differences in drug sensitivity and motivation. In addition, I’ve observed catheter implantation surgeries, which provided exposure to basic principles of stereotaxic technique and in vivo preparations for neural monitoring.
+          </p>
+      
+          <p>
+            Beyond these responsibilities, I’m co-leading a side project to build a 12-camera, multi-angle behavioral monitoring system compatible with the SLEAP AI pose estimation toolkit. This setup allows for detailed, automated video capture of rodent self-administration behavior during experiments. I’m involved in hardware selection, Python-based system configuration, and ensuring seamless integration with existing data pipelines. This project combines my interests in neuroscience, computer vision, and artificial intelligence to support scalable, high-throughput analysis of fine-grained behavioral patterns.
+          </p>
+        </div>
+      </section>
+      
+
+    <section id="student-orgs" class="category">
+      <h2 onclick="toggleDropdown('student-org-list')">Student Organizations ▼</h2>
+      <ul id="student-org-list" class="hidden">
+        <li>Org 1 — <a href="#">Details</a></li>
+      </ul>
+    </section>
+
+    <section id="research" class="category">
+      <h2 onclick="toggleDropdown('research-list')">Research ▼</h2>
+      <ul id="research-list" class="hidden">
+        <li>Project 1 — <a href="#">Details</a></li>
+      </ul>
+    </section>
+
+    <section id="competitions" class="category">
+      <h2 onclick="toggleDropdown('competition-list')">Competitions ▼</h2>
+      <ul id="competition-list" class="hidden">
+        <li>Competition 1 — <a href="#">Details</a></li>
+      </ul>
+    </section>
+
+    <section id="projects" class="category">
+      <h2 onclick="toggleDropdown('projects-list')">Projects ▼</h2>
+      <ul id="projects-list" class="hidden">
+        <li>Project 1 — <a href="#">GitHub</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
