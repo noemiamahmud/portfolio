@@ -103,7 +103,8 @@ body {
   }
   
   .resume-section a:hover {
-    text-decoration: underline;
+    color: #302fbc ;
+    transition: color 0.3s;
   }
   .category p {
     margin-bottom: 15px;
@@ -111,11 +112,33 @@ body {
   }
   
   .category a {
-    color: #1abc9c;
+    color: #4e4ec2;
     text-decoration: none;
   }
   
   .category a:hover {
     text-decoration: underline;
+  }
+  .category h3 {
+    margin-top: 20px;
+    color: #222;
+  }
+  
+  .category ul {
+    list-style-type: square;
+    padding-left: 20px;
+  }
+  
+  .category li {
+    margin-bottom: 8px;
+  }
+  
+  .media-placeholder {
+    margin: 20px 0;
+    padding: 10px;
+    border: 2px dashed #aaa;
+    text-align: center;
+    color: #777;
+    font-style: italic;
   }
   
