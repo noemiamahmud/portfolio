@@ -1,5 +1,6 @@
-function toggleDropdown(id) {
-    const list = document.getElementById(id);
-    list.classList.toggle('hidden');
-  }
-  
+function toggleDropdown(id){
+  const panel = document.getElementById(id);
+  const heading = event.currentTarget; // relies on inline onclick
+  panel.classList.toggle('hidden');
+  heading.classList.toggle('open');
+}
