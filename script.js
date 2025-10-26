@@ -51,7 +51,7 @@ function showInfo(section) {
     case 'student-orgs':
       infoContent.innerHTML = `
         <h2>Student Organizations & Leadership</h2>
-
+        <p><a href="https://neurotechatuiuc.com" target="_blank">Visit the official Neurotech website created by me! →</a></p>
         <h3><a href="#" target="_blank">NeuroTech @ UIUC</a> — Virtual Reality Development Engineer & Researcher</h3>
         <p>Integrating EEG data acquisition with real-time feedback in Unity VR environments for neurofeedback therapy. Developed ML models to classify cognitive states.</p>
 
