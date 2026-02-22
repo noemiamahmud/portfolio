@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Noemia L Mahmud | Portfolio</title>
   <link rel="stylesheet" href="styles.css"/>
+
+  <!-- Optional: If you actually want Poppins to load consistently -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -13,9 +18,9 @@
     <h1 class="site-title">Noemia L. Mahmud | Portfolio</h1>
     <div class="nav-right">
       <a href="mailto:noemiamahmud@gmail.com">Email</a>
-      <a href="https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/" target="_blank">LinkedIn</a>
-      <a href="https://github.com/noemiamahmud" target="_blank">GitHub</a>
-      <a href="https://drive.google.com/file/d/1yHbylSjWukteCHpv3tycyVQPTp6H-cQW/view?usp=sharing" target="_blank">Resume</a>
+      <a href="https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      <a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="https://drive.google.com/file/d/1yHbylSjWukteCHpv3tycyVQPTp6H-cQW/view?usp=sharing" target="_blank" rel="noopener noreferrer">Resume</a>
     </div>
   </nav>
 
@@ -29,36 +34,23 @@
       mozallowfullscreen="true"
       webkitallowfullscreen="true"
       allow="autoplay; fullscreen; xr-spatial-tracking"
-      src="https://sketchfab.com/models/20e930a5fae5457fa6d1738afa00c7bb/embed?
-autostart=1
-&ui_infos=0
-&ui_controls=1
-&ui_annotations=0
-&ui_hint=0
-&ui_help=0
-&ui_inspector=0
-&ui_stop=0
-&ui_vr=0
-&ui_watermark=0
-&ui_watermark_link=0
-&preload=1">
+      src="https://sketchfab.com/models/20e930a5fae5457fa6d1738afa00c7bb/embed?autostart=1&ui_infos=0&ui_controls=1&ui_annotations=0&ui_hint=0&ui_help=0&ui_inspector=0&ui_stop=0&ui_vr=0&ui_watermark=0&ui_watermark_link=0&preload=1">
     </iframe>
   </div>
 
   <!-- Section Buttons -->
- <div class="overlay-buttons">
-  <button data-section="internships"><span class="num">1</span> Internship Experience</button>
-  <button data-section="student-orgs"><span class="num">2</span> Student Organizations & Leadership</button>
-  <button data-section="research"><span class="num">3</span> Research</button>
-  <button data-section="competitions"><span class="num">4</span> Competitions & Hackathons</button>
-  <button data-section="extracurriculars"><span class="num">5</span> Recreational Extracurriculars</button>
-</div>
-
+  <div class="overlay-buttons" role="navigation" aria-label="Portfolio sections">
+    <button data-section="internships"><span class="num">1</span> Internship Experience</button>
+    <button data-section="student-orgs"><span class="num">2</span> Student Organizations & Leadership</button>
+    <button data-section="research"><span class="num">3</span> Research</button>
+    <button data-section="competitions"><span class="num">4</span> Competitions & Hackathons</button>
+    <button data-section="extracurriculars"><span class="num">5</span> Recreational Extracurriculars</button>
+  </div>
 
   <!-- Info Panel -->
-  <section id="info-panel" class="hidden">
+  <section id="info-panel" class="hidden" aria-live="polite">
+    <button class="close-btn" type="button" onclick="closePanel()" aria-label="Close panel">✕</button>
     <div id="info-content" class="info-content"></div>
-    <button class="close-btn" onclick="closePanel()">✕</button>
   </section>
 
   <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>

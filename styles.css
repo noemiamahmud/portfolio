@@ -1,8 +1,14 @@
+:root {
+  --nav-h: 60px;
+}
+
+* { box-sizing: border-box; }
+
 body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden;
+  overflow: hidden; /* keep the background 3D scene fixed */
   font-family: "Poppins", sans-serif;
   background: #0b0b10;
   color: #fff;
@@ -13,7 +19,7 @@ body, html {
   position: fixed;
   top: 0;
   width: 100%;
-  height: 60px;
+  height: var(--nav-h);
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
   display: flex;
@@ -24,7 +30,7 @@ body, html {
   padding: 0 100px;
 }
 
-/* ===== SITE TITLE (Noemia Mahmud) ===== */
+/* ===== SITE TITLE ===== */
 .site-title {
   position: fixed;
   top: 12px;
@@ -34,14 +40,13 @@ body, html {
   color: #ffffff;
   text-shadow: 0 0 10px rgba(180, 170, 255, 0.7);
   z-index: 102;
-  backdrop-filter: none;   /* prevents blur effect */
-  pointer-events: none;    /* ensures it doesn't block clicks on navbar links */
+  pointer-events: none;
 }
 
 /* ===== NAV LINKS ===== */
 .nav-right {
   display: flex;
-  gap: 2.5rem; /* more spacing between links */
+  gap: 2.5rem;
 }
 
 .navbar a {
@@ -57,7 +62,17 @@ body, html {
   transform: scale(1.05);
 }
 
-/* ===== OVERLAY BUTTONS ===== */
+/* ===== SKETCHFAB ===== */
+.sketchfab-container iframe {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  z-index: 0;
+}
+
+/* ===== OVERLAY BUTTONS (DESKTOP DEFAULT) ===== */
 .overlay-buttons {
   position: fixed;
   bottom: 9%;
@@ -83,6 +98,7 @@ body, html {
   cursor: pointer;
   transition: all 0.3s ease, transform 0.4s ease;
   box-shadow: 0 6px 20px rgba(85, 80, 255, 0.35);
+  white-space: nowrap;
 }
 
 .overlay-buttons button:hover {
@@ -118,46 +134,30 @@ body, html {
   color: #3030a5;
 }
 
-/* Responsive tweak */
-@media (max-width: 768px) {
-  .overlay-buttons {
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 10%;
-    align-items: center;
-  }
-}
-
-/* ===== SKETCHFAB ===== */
-.sketchfab-container iframe {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  z-index: 0;
-}
-
-/* ===== INFO PANEL ===== */
+/* ===== INFO PANEL (DESKTOP DEFAULT) ===== */
 #info-panel {
   position: fixed;
+
+  /* keep it from colliding with navbar on short screens */
+  top: calc(var(--nav-h) + 18px);
+  bottom: 6%;
   right: 3%;
-  bottom: 10%;
-  width: 36%;
-  max-width: 500px;
-  background: rgba(15,15,30,0.85);
+
+  width: min(520px, 36vw);
+  background: rgba(15, 15, 30, 0.88);
   border-radius: 18px;
   backdrop-filter: blur(10px);
   box-shadow: 0 0 30px rgba(0,0,0,0.4);
-  padding: 28px;
+  padding: 26px;
   color: #e8e9ff;
   line-height: 1.65;
   z-index: 20;
-  animation: fadeIn 0.5s ease forwards;
+  animation: fadeIn 0.35s ease forwards;
+
   overflow-y: auto;
-  max-height: 75%;
+  -webkit-overflow-scrolling: touch;
 }
+
 .hidden { display: none; }
 
 #info-content a {
@@ -167,25 +167,149 @@ body, html {
 }
 #info-content a:hover { text-decoration: underline; }
 
-#info-content h2 { color: #cfcfff; font-size: 1.5rem; }
-#info-content h3 { color: #a8b1ff; font-size: 1.1rem; margin-top: 1rem; }
+#info-content h2 {
+  color: #cfcfff;
+  font-size: clamp(1.25rem, 1.2vw + 1rem, 1.6rem);
+  margin: 0 0 10px;
+}
+#info-content h3 {
+  color: #a8b1ff;
+  font-size: clamp(1.02rem, 0.6vw + 0.9rem, 1.18rem);
+  margin-top: 1rem;
+}
+
+#info-content p,
+#info-content li {
+  font-size: clamp(0.95rem, 0.3vw + 0.9rem, 1.02rem);
+}
+
+#info-content ul {
+  padding-left: 1.2rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.8rem;
+}
 
 .close-btn {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  background: rgba(90,80,255,0.9);
+  position: sticky; /* stays visible while scrolling */
+  top: 0;
+  float: right;
+  margin-left: auto;
+
+  background: rgba(90,80,255,0.92);
   border: none;
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   cursor: pointer;
+  z-index: 30;
 }
 .close-btn:hover { background: #b6b3ff; color: #1c1b38; }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================
+   RESPONSIVE FIXES
+   ========================= */
+
+/* Medium screens: give the panel more width and reduce collisions */
+@media (max-width: 1100px) {
+  .navbar { padding: 0 24px; }
+  .site-title { left: 18px; }
+
+  #info-panel {
+    width: min(620px, 48vw);
+    right: 2%;
+    padding: 22px;
+  }
+
+  .overlay-buttons {
+    left: 3%;
+    bottom: 7%;
+    gap: 14px;
+  }
+
+  .overlay-buttons button {
+    font-size: 1rem;
+    padding: 12px 18px;
+  }
+}
+
+/* Small screens: turn panel into a bottom-sheet / near full-screen overlay,
+   and move buttons into a horizontal scroll bar at the bottom */
+@media (max-width: 850px) {
+  .nav-right { gap: 1.2rem; }
+  .navbar a { font-size: 0.95rem; }
+
+  /* Buttons become a horizontal row */
+  .overlay-buttons {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 14px;
+    flex-direction: row;
+    gap: 10px;
+    width: calc(100% - 24px);
+    padding: 10px 10px;
+    border-radius: 16px;
+    background: rgba(10, 10, 20, 0.45);
+    backdrop-filter: blur(10px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    align-items: center;
+  }
+
+  .overlay-buttons button {
+    transform: none;
+    box-shadow: 0 6px 18px rgba(85, 80, 255, 0.25);
+  }
+  .overlay-buttons button:hover {
+    transform: scale(1.03);
+  }
+  .overlay-buttons button.active {
+    transform: scale(1.04);
+  }
+
+  /* Panel becomes centered and uses almost all space */
+  #info-panel {
+    left: 12px;
+    right: 12px;
+    width: auto;
+
+    top: calc(var(--nav-h) + 12px);
+    bottom: 72px; /* leave room for the button bar */
+
+    border-radius: 18px;
+    padding: 18px;
+  }
+}
+
+/* Extra small: tighten spacing further */
+@media (max-width: 520px) {
+  .site-title { font-size: 1rem; }
+
+  .nav-right a {
+    font-size: 0.9rem;
+  }
+
+  .overlay-buttons {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .overlay-buttons button {
+    font-size: 0.95rem;
+    padding: 10px 14px;
+    border-radius: 12px;
+  }
+
+  #info-panel {
+    top: calc(var(--nav-h) + 10px);
+    bottom: 70px;
+    padding: 16px;
+  }
 }

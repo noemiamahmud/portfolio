@@ -23,14 +23,29 @@ function setupButtons() {
     btn.addEventListener('click', () => {
       buttons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      api.gotoAnnotation(index);
+
+      // safe-guard if API isn't ready for any reason
+      if (api && typeof api.gotoAnnotation === "function") {
+        api.gotoAnnotation(index);
+      }
+
       showInfo(btn.dataset.section);
     });
+  });
+
+  // Escape key closes panel
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !infoPanel.classList.contains('hidden')) {
+      closePanel();
+    }
   });
 }
 
 function showInfo(section) {
   infoPanel.classList.remove('hidden');
+
+  // Always start at top when switching sections (fixes “can’t see full text” feeling)
+  infoPanel.scrollTop = 0;
 
   switch (section) {
     case 'internships':
