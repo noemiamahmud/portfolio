@@ -124,15 +124,6 @@ if (navToggle) {
    Each project returns its full modal body HTML via a content() function,
    so every modal can have unique layout, multiple images, and storytelling sections. */
 
-function imgPlaceholder(label) {
-  return `<div class="modal-inline-img">[${label}]</div>`;
-}
-function imgRow(label1, label2) {
-  return `<div class="modal-img-row">
-    <div class="modal-inline-img">[${label1}]</div>
-    <div class="modal-inline-img">[${label2}]</div>
-  </div>`;
-}
 function techList(items) {
   return `<div class="modal-tech-list">${items.map(t => `<span>${t}</span>`).join('')}</div>`;
 }
@@ -149,7 +140,7 @@ const projectData = {
     title: 'Applied AI — Course Projects Collection',
     tag: 'Applied AI',
     content: () => `
-      <div class="modal-hero-img">[Cover Image — Applied AI Projects]</div>
+      <div class="modal-hero-img"><img src="IMG_6747.JPG" alt="" /></div>
 
       <div class="modal-section">
         <h3>Overview</h3>
@@ -159,25 +150,31 @@ const projectData = {
       <div class="modal-section">
         <h3>Image Classification with CNNs</h3>
         <p>Built and trained convolutional neural networks from scratch on benchmark datasets. Explored architectures from simple multi-layer nets to ResNet-style skip connections, with systematic ablation studies on depth, dropout, and data augmentation.</p>
-        ${imgRow('CNN Architecture Diagram', 'Training Loss Curves')}
+        <div class="modal-img-row">
+        <div class="modal-inline-img"><img src="IMG_6747.JPG" alt="" /></div>
+        <div class="modal-inline-img"><img src="IMG_6747.JPG" alt="" /></div>
+      </div>
       </div>
 
       <div class="modal-section">
         <h3>Sentiment Analysis with Transformers</h3>
         <p>Fine-tuned a pre-trained BERT model for multi-class sentiment classification on product reviews. Built a preprocessing pipeline, experimented with learning rate schedules, and analyzed attention maps to interpret model decisions.</p>
-        ${imgPlaceholder('Attention Heatmap Visualization')}
+        <div class="modal-inline-img"><img src="IMG_6747.JPG" alt="" /></div>
       </div>
 
       <div class="modal-section">
         <h3>Reinforcement Learning Agent</h3>
         <p>Implemented Deep Q-Networks (DQN) and Proximal Policy Optimization (PPO) agents in OpenAI Gym environments. Compared convergence speed, reward stability, and generalization across environment variants.</p>
-        ${imgRow('Reward Curves — DQN vs PPO', 'Agent Gameplay Recording')}
+        <div class="modal-img-row">
+        <div class="modal-inline-img"><img src="IMG_6747.JPG" alt="" /></div>
+        <div class="modal-inline-img"><img src="IMG_6747.JPG" alt="" /></div>
+      </div>
       </div>
 
       <div class="modal-section">
         <h3>Generative Models</h3>
         <p>Trained a Variational Autoencoder (VAE) and a small GAN on the CelebA dataset. Explored latent space interpolation, mode collapse mitigation, and FID scoring to evaluate generation quality.</p>
-        ${imgPlaceholder('Latent Space Interpolation Grid')}
+        <div class="modal-inline-img"><img src="IMG_6747.JPG" alt="" /></div>
       </div>
 
       <div class="modal-section">
@@ -191,7 +188,7 @@ const projectData = {
     title: 'AI Healthcare RAG Chatbot',
     tag: 'Machine Learning',
     content: () => `
-      <div class="modal-hero-img">[Cover Image — RAG Chatbot Interface]</div>
+      <div class="modal-hero-img"><img src="medassist.png" alt="" /></div>
 
       <div class="modal-section">
         <h3>The Problem</h3>
@@ -201,7 +198,7 @@ const projectData = {
       <div class="modal-section">
         <h3>Architecture & Pipeline</h3>
         <p>Designed a Retrieval-Augmented Generation pipeline that ingests curated healthcare documents, medical textbooks, and relevant research, chunks and embeds them into a vector database, retrieves the most relevant passages at query time, and feeds them as context to an LLM for grounded answer synthesis.</p>
-        ${imgPlaceholder('System Architecture Diagram')}
+        <div class="modal-inline-img"><img src="medassist2.png" alt="" /></div>
         <ul>
           <li>Document ingestion with chunking, overlap, and metadata tagging</li>
           <li>Embedding generation via sentence-transformers</li>
@@ -214,7 +211,7 @@ const projectData = {
       <div class="modal-section">
         <h3>User Interface</h3>
         <p>I later developed a clean chat interface where each response includes inline citations with expandable source previews, so users can verify claims without leaving the conversation. Users could also upload their own medical documents to have them broken down and explained for clarity, particularly useful for large and complex diagnoses.</p>
-        ${imgPlaceholder('Chat UI with Inline Citations')}
+        <div class="modal-inline-img"><img src="medassist3.png" alt="" /></div>
       </div>
 
       <div class="modal-section">
@@ -228,7 +225,9 @@ const projectData = {
     title: 'Rat Behavioral Monitoring System',
     tag: 'Neuroscience Research',
     content: () => `
-      <div class="modal-hero-img">[Cover Image — Camera Array Setup]</div>
+      <div class="modal-section">
+        <video src="annotated.mp4" autoplay loop muted playsinline class="modal-video"></video>
+      </div>
 
       <div class="modal-section">
         <h3>Background</h3>
@@ -237,22 +236,24 @@ const projectData = {
 
       <div class="modal-section">
         <h3>Camera System Design</h3>
-        <p>Designed an ongoing experimetnal application that takes the origional problem statement and utilizes various neural network modeling approaches to classify behaviors within operant self-administration chambers. This project has since been discontinued by the lab, but would ideally adapt to a 12-camera synchronized recording system.</p>
-        ${imgRow('Camera Layout Diagram', 'Multi-Angle Sample Frame')}
+        <p>Designed an ongoing experimental application that takes the original problem statement and utilizes various neural network modeling approaches to classify behaviors within operant self-administration chambers. This project has since been discontinued by the lab, but would ideally adapt to a 12-camera synchronized recording system.</p>
       </div>
 
       <div class="modal-section">
         <h3>DeepLabCut Integration</h3>
-        <p>Rat Behavior Intelligence is a browser-based neuroscience tool that automates the analysis of rodent behavior from raw video — replacing hours of manual observation with a structured, interpretable pipeline. Users upload a rat video (or record directly from the browser), and the system processes it frame by frame, extracting temporal movement features like confinement, turning patterns, and motion bursts to classify behavioral states including exploration, freezing, grooming, locomotor bursts, stereotypy, and resting. When a local DeepLabCut environment is available, the pipeline upgrades to full pose estimation using a custom-trained ResNet-50 model tracking up to 16 anatomical keypoints — nose, ears, spine segments, paws, and tail — enabling geometry-derived classifications that go far beyond simple motion heuristics.
-        The architecture is deliberately staged for interpretability and extensibility. A FastAPI backend handles video ingestion, runs the classification pipeline, and writes annotated outputs; the frontend streams results back as a playable annotated MP4, a timeline.json with frame-level behavior bouts, timestamped event feeds, and a natural-language summary with review-priority flagging. The observer commentary layer is rule-based by default but upgrades transparently to an LLM (OpenAI or a local llama.cpp server) when configured — keeping the core pipeline functional in fully offline or resource-constrained environments.
-        What makes this project technically meaningful is its graceful degradation and forward-looking design. When DeepLabCut is unavailable, the system falls back to a motion-based temporal classifier without breaking the user experience. The expanded 16-point skeleton schema and retraining templates are already in place, so improving classification accuracy is a matter of more labeled data rather than architectural rework. The combination of pose estimation, temporal behavior classification, and LLM-augmented summarization positions this as a practical screening tool for neuroscience labs — reducing the manual review burden while keeping a human researcher in the loop on ambiguous or high-priority clips.</p>
-        ${imgPlaceholder('Pose Estimation Overlay — Tracked Keypoints')}
+        <p>Rat Behavior Intelligence is a browser-based neuroscience tool that automates the analysis of rodent behavior from raw video - replacing hours of manual observation with a structured, interpretable pipeline. Users upload a rat video (or record directly from the browser), and the system processes it frame by frame, extracting temporal movement features like confinement, turning patterns, and motion bursts to classify behavioral states including exploration, freezing, grooming, locomotor bursts, stereotypy, and resting. When a local DeepLabCut environment is available, the pipeline upgrades to full pose estimation using a custom-trained ResNet-50 model tracking up to 16 anatomical keypoints - nose, ears, spine segments, paws, and tail - enabling geometry-derived classifications that go far beyond simple motion heuristics.</p>
+        <p>The architecture is deliberately staged for interpretability and extensibility. A FastAPI backend handles video ingestion, runs the classification pipeline, and writes annotated outputs; the frontend streams results back as a playable annotated MP4, a timeline.json with frame-level behavior bouts, timestamped event feeds, and a natural-language summary with review-priority flagging. The observer commentary layer is rule-based by default but upgrades transparently to an LLM (OpenAI or a local llama.cpp server) when configured - keeping the core pipeline functional in fully offline or resource-constrained environments.</p>
+        <p>What makes this project technically meaningful is its graceful degradation and forward-looking design. When DeepLabCut is unavailable, the system falls back to a motion-based temporal classifier without breaking the user experience. The expanded 16-point skeleton schema and retraining templates are already in place, so improving classification accuracy is a matter of more labeled data rather than architectural rework. The combination of pose estimation, temporal behavior classification, and LLM-augmented summarization positions this as a practical screening tool for neuroscience labs - reducing the manual review burden while keeping a human researcher in the loop on ambiguous or high-priority clips.</p>
       </div>
 
       <div class="modal-section">
         <h3>Validation Pipeline</h3>
         <p>Developed (and experimentally redeveloping) an end-to-end Python pipeline that cross-references behavioral event logs with synchronized video timestamps. With the use of Claude Code, I am in the process of redeveloping this system to generate visual overlays of tracked poses on raw footage, and flag anomalies where logged events don't match observed behavior.</p>
-        ${imgRow('Timestamp Alignment Visualization', 'Anomaly Detection Dashboard')}
+      </div>
+
+      <div class="modal-img-row">
+        <div class="modal-inline-img"><img src="Image 3-31-26 at 11.15 AM.png" alt="" /></div>
+        <div class="modal-inline-img"><img src="ratcode.png" alt="" /></div>
       </div>
 
       <div class="modal-section">
@@ -263,41 +264,67 @@ const projectData = {
   },
 
   'neurotech-vr': {
-    title: 'NeuroTech R&D — VR Biofeedback System',
+    title: 'Engineering Open House',
     tag: 'Research',
     content: () => `
-      <div class="modal-hero-img">[Cover Image — VR Headset with EEG]</div>
+      <div class="modal-hero-img"><img src="eoh2.jpg" alt="" /></div>
 
       <div class="modal-section">
-        <h3>Vision</h3>
+        <h3>About EOH</h3>
+        <p>Engineering Open House is UIUC's flagship public showcase where student teams demo live projects to thousands of visitors. I presented two projects at EOH — a VR biofeedback system built with NeuroTech @ UIUC, and Melodify, an AI music generator from a hackathon.</p>
+      </div>
+
+      <hr style="border: none; border-top: 1px solid var(--color-border); margin: 32px 0;" />
+
+      <div class="modal-section">
+        <h3>NeuroTech R&D — VR Biofeedback System</h3>
         <p>At NeuroTech @ UIUC, we set out to build VR experiences that respond to your brain and body in real time — not scripted interactions, but adaptive environments driven by live physiological data. The question was: can we make neurofeedback feel like a game instead of a clinical tool?</p>
       </div>
 
       <div class="modal-section">
-        <h3>Signal Acquisition</h3>
-        <p>While my startup's project details are confidential, a related project of mine is based on the same idea. Neurohack Fall 2025 "Mindlift."
-
-        This project demonstrates a non-invasive approach to brain–computer interaction using natural micro-behavioral signals that are tightly coupled with cognitive intent.
-        
-        Instead of relying on EEG or invasive neural hardware, we use high-resolution eye movements, subtle facial muscle activations, and head gestures as a proxy for the user’s internal decision-making.
-        
-        This matters because these signals are fast, reliable, universally accessible, and require no special equipment—showing a path toward everyday BCI interactions.
-        
-        By turning gaze and micro-expressions into a telekinetic control system, we illustrate how future BCIs can merge computer vision, human cognition, and natural behavior to create interfaces that feel effortless and intuitive. This is a step toward “thought-adjacent” interaction—technology responding to what you intend, not what you physically do.</p>
-        ${imgPlaceholder('Signal Pipeline — Raw EEG to Feature Extraction')}
+        <h3>Signal Acquisition & BCI Approach</h3>
+        <p>While my startup's project details are confidential, a related project of mine is based on the same idea — Neurohack Fall 2025 "Mindlift." This project demonstrates a non-invasive approach to brain–computer interaction using natural micro-behavioral signals tightly coupled with cognitive intent. Instead of relying on EEG or invasive neural hardware, we use high-resolution eye movements, subtle facial muscle activations, and head gestures as a proxy for the user's internal decision-making.</p>
+        <p>By turning gaze and micro-expressions into a telekinetic control system, we illustrate how future BCIs can merge computer vision, human cognition, and natural behavior to create interfaces that feel effortless and intuitive — technology responding to what you intend, not what you physically do.</p>
+        <div class="modal-inline-img"><img src="NTX1.png" alt="" /></div>
+        <div class="modal-inline-img"><img src="NTX2.png" alt="" /></div>
       </div>
-
 
       <div class="modal-section">
         <h3>Cozad New Venture Challenge</h3>
         <p>Pitched our startup's first demos of the project as "Brainstorm" at the Cozad New Venture Challenge (Spring 2025) and reached the finals. Contributed to business strategy, competitive positioning, and delivered investor-facing demo materials.</p>
-        ${imgPlaceholder('Pitch Deck Slide — Product Vision')}
       </div>
 
       <div class="modal-section">
-        <h3>Tech Stack</h3>
+        <h3>NeuroTech Tech Stack</h3>
         ${techList(['Unity', 'C#', 'Python', 'EEG', 'Heart Rate Sensors', 'VR', 'Biosignal Processing', 'Game AI'])}
         ${linksList([{ label: 'NeuroTech Website', url: 'https://neurotechatuiuc.com' }])}
+      </div>
+
+      <hr style="border: none; border-top: 1px solid var(--color-border); margin: 32px 0;" />
+
+      <div class="modal-section">
+        <h3>Melodify — AI Music Generator</h3>
+        <p>Melodify was one of my first hackathon projects in college — built at Dev-Ada 2024. The idea: describe a mood or scene in plain language and get original audio back. A user types a prompt like "upbeat jazz for a coffee shop morning" and the app returns a generated music clip, powered by Meta's AudioCraft MusicGen model running locally on the backend.</p>
+        <div class="modal-inline-img"><img src="Screenshot 2025-09-08 at 7.41.38 PM.png" alt="" /></div>
+      </div>
+
+      <div class="modal-section">
+        <h3>How It Works</h3>
+        <p>The backend is a Flask application structured around the standard app factory pattern. A standalone MusicGen script wraps AudioCraft's generation pipeline, takes a text prompt as input, and writes the output to a generated audio folder that the Flask app then serves back to the user.</p>
+        <div class="modal-img-row">
+        <div class="modal-inline-img"><img src="Screenshot 2025-09-08 at 7.42.12 PM.png" alt="" /></div>
+      </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>What I Learned</h3>
+        <p>As one of my first end-to-end AI integrations, this project was a hands-on introduction to wiring a generative model into a real web application — handling model loading latency, serving binary audio output through a web server, and shipping something coherent under hackathon time pressure.</p>
+      </div>
+
+      <div class="modal-section">
+        <h3>Melodify Tech Stack</h3>
+        ${techList(['Python', 'Flask', 'Meta AudioCraft', 'MusicGen', 'HTML', 'CSS'])}
+        ${linksList([{ label: 'GitHub', url: 'https://github.com/noemiamahmud/melodify_noemia' }])}
       </div>
     `
   },
@@ -306,7 +333,7 @@ const projectData = {
     title: 'Web-Cite — Assisted Research Tool',
     tag: 'Full Stack',
     content: () => `
-      <div class="modal-hero-img">[Cover Image — Web-Cite Dashboard]</div>
+      <div class="modal-hero-img"><img src="webcite1.png" alt="" /></div>
 
       <div class="modal-section">
         <h3>The Problem</h3>
@@ -316,7 +343,7 @@ const projectData = {
       <div class="modal-section">
         <h3>How It Works</h3>
         <p>Web-Cite is a full-stack research tool built to solve a real friction point in academic work — the fragmented, time-consuming process of finding and organizing related literature. Rather than requiring users to manually chain together searches across databases, Web-Cite automates the discovery of semantically related papers and renders them as an interactive, editable citation web. A user searches PubMed, selects a root article, and the backend takes over: it fetches the article's metadata, computes a local embedding vector from the title, abstract, keywords, and MeSH terms, then searches PubMed for candidate papers, scores each by cosine similarity, and surfaces the top three to four most relevant results as a structured graph — all without any manual input beyond the initial selection.</p>
-        ${imgPlaceholder('Upload & Extraction Flow')}
+        <div class="modal-inline-img"><img src="webcite3.png" alt="" /></div>
       </div>
 
       <div class="modal-section">
@@ -327,7 +354,7 @@ const projectData = {
       <div class="modal-section">
         <h3>Key Distinctions</h3>
         <p>What distinguishes Web-Cite from existing tools like PubMed or EBSCO is the combination of automated semantic discovery with user-editable output. Existing citation graph tools either require users to build the web manually or produce static, non-customizable maps. Web-Cite generates the initial graph automatically from embedding similarity, then hands control back to the researcher — letting them reposition nodes, update titles, and build keyword webs that reflect their own mental model of a topic. The result is a tool that reduces the cold-start burden of literature review while preserving the researcher's agency over how their knowledge is organized.</p>
-        ${imgPlaceholder('PDF Parsing Pipeline')}
+        <div class="modal-inline-img"><img src="webcite2.png" alt="" /></div>
       </div>
 
       <div class="modal-section">
@@ -341,82 +368,85 @@ const projectData = {
     title: 'Melodify — AI Music Generator',
     tag: 'Hackathon',
     content: () => `
-      <div class="modal-hero-img">[Cover Image — Melodify Interface]</div>
+      <div class="modal-hero-img"><img src="Screenshot 2025-09-08 at 7.42.12 PM.png" alt="" /></div>
 
       <div class="modal-section">
-        <h3>The Concept</h3>
-        <p>What if you could describe a mood or a scene in words and get original music back? Melodify turns natural language prompts into audio using Meta's AudioCraft model. Built at Dev-Ada 2024, the goal was to make generative music feel like a real product — not a research demo.</p>
+        <h3>The Project</h3>
+        <p>Melodify was one of my first hackathon projects in college — built at Dev-Ada 2024. The idea: describe a mood or scene in plain language and get original audio back. A user types a prompt like "upbeat jazz for a coffee shop morning" and the app returns a generated music clip, powered by Meta's AudioCraft MusicGen model running locally on the backend.</p>
       </div>
 
       <div class="modal-section">
-        <h3>User Experience</h3>
-        <p>Designed the flow to feel intuitive: type a prompt ("upbeat jazz for a coffee shop morning"), see a generation progress indicator, then play back the result with waveform visualization. Users can iterate, save favorites, and download tracks.</p>
-        ${imgRow('Prompt Input Screen', 'Waveform Playback View')}
+        <h3>How It Works</h3>
+        <p>The backend is a Flask application structured around the standard app factory pattern — routes, models, and templates organized under an <code>app/</code> directory with a <code>run.py</code> entry point. A standalone <code>MusicGen.py</code> script wraps AudioCraft's generation pipeline, takes a text prompt as input, and writes the output to a <code>generated_audio/</code> folder that the Flask app then serves back to the user.</p>
+        <div class="modal-img-row">
+      </div>
       </div>
 
       <div class="modal-section">
-        <h3>Technical Implementation</h3>
-        <ul>
-          <li>React frontend with real-time generation state management and audio playback</li>
-          <li>Flask backend wrapping AudioCraft's MusicGen model</li>
-          <li>Async job queue to handle generation latency without blocking the UI</li>
-          <li>Audio post-processing for consistent volume normalization and fade-outs</li>
-        </ul>
-        ${imgPlaceholder('Architecture — Frontend to Model Pipeline')}
-      </div>
-
-      <div class="modal-section">
-        <h3>Hackathon Delivery</h3>
-        <p>Shipped a fully working demo within 24 hours. Prioritized features that made the end-to-end experience coherent and easy to explain during judging. The team coordinated across frontend, backend, and model integration tracks.</p>
-        ${imgPlaceholder('Team Demo at Dev-Ada 2024')}
+        <h3>What I Learned</h3>
+        <p>As one of my first end-to-end AI integrations, this project was a hands-on introduction to wiring a generative model into a real web application — handling model loading latency, serving binary audio output through a web server, and shipping something coherent under hackathon time pressure. The AudioCraft library is vendored directly in the repo, which kept the setup self-contained and demo-ready.</p>
+        <div class="modal-inline-img"><img src="Screenshot 2025-09-08 at 7.41.38 PM.png" alt="" /></div>
       </div>
 
       <div class="modal-section">
         <h3>Tech Stack</h3>
-        ${techList(['React', 'Flask', 'Python', 'Meta AudioCraft', 'MusicGen', 'Web Audio API'])}
+        ${techList(['Python', 'Flask', 'Meta AudioCraft', 'MusicGen', 'HTML', 'CSS'])}
         ${linksList([{ label: 'GitHub', url: 'https://github.com/noemiamahmud/melodify_noemia' }])}
       </div>
     `
   },
 
   'datathon': {
-    title: 'Datathon — Neural Network Modeling',
+    title: 'Datathon — Workforce Forecasting & Optimization',
     tag: 'Hackathon',
     content: () => `
-      <div class="modal-hero-img">[Cover Image — Datathon Competition]</div>
-
+      <div class="modal-hero-img"><img src="stats1.png" alt="" /></div>
+  
       <div class="modal-section">
-        <h3>The Competition</h3>
-        <p>Competed in a datathon challenge focused on building predictive models from complex, real-world datasets. Our team tackled the problem using neural network architectures, iterating through data preprocessing, feature engineering, and model selection under tight time constraints.</p>
+        <h3>The Problem</h3>
+        <p>Competed in a datathon focused on forecasting call center demand for ~4M monthly calls across multiple clients. The challenge was not just accuracy — but minimizing asymmetric business costs, where understaffing (missed SLAs, abandoned calls) is significantly more expensive than overstaffing.</p>
       </div>
-
+  
       <div class="modal-section">
         <h3>Data Exploration & Preprocessing</h3>
-        <p>Spent the first phase deeply exploring the dataset — identifying missing values, class imbalances, and feature correlations. Built a cleaning pipeline that standardized inputs, handled nulls with domain-informed imputation, and engineered new features from raw columns.</p>
-        ${imgRow('Exploratory Data Analysis — Feature Distributions', 'Correlation Heatmap')}
+        <p>Worked with multi-resolution time series data: two years of daily metrics and high-frequency (30-min interval) call data. Identified missing days, seasonal patterns, and strong intraday structure. Built preprocessing pipelines to clean gaps, encode temporal features (day-of-week, holidays), and align daily + interval datasets for modeling.</p>
+        <div class="modal-img-row">
+          <div class="modal-inline-img"><img src="stats2.png" alt="" /></div>
+          <div class="modal-inline-img"><img src="stats3.png" alt="" /></div>
+        </div>
       </div>
-
+  
       <div class="modal-section">
         <h3>Model Architecture</h3>
-        <p>Designed and trained a feedforward neural network in PyTorch, experimenting with layer depth, dropout rates, batch normalization, and learning rate schedules. Benchmarked against traditional ML baselines (Random Forest, XGBoost) to validate the neural approach.</p>
-        ${imgPlaceholder('Model Architecture Diagram')}
+        <p>Designed a two-stage forecasting system:
+        <br><br>
+        • <b>Stage 1 (Daily Forecasting):</b> SARIMAX models with seasonal components and exogenous variables (weekends, holidays) to predict daily call volume, handle time, and abandon rate.<br>
+        • <b>Stage 2 (Intraday Distribution):</b> PyTorch neural network mapping day-of-week → 48 interval weights via softmax, learning consistent intraday call patterns.
+        <br><br>
+        Combined both stages to generate full 30-minute forecasts per day.</p>
+        <div class="modal-inline-img"><img src="stats4.png" alt="" /></div>
       </div>
-
+  
       <div class="modal-section">
         <h3>Training & Evaluation</h3>
-        <p>Implemented k-fold cross-validation to prevent overfitting and used early stopping based on validation loss. Tracked metrics across experiments using structured logging to compare configurations systematically.</p>
-        ${imgRow('Training Loss Curves', 'Confusion Matrix — Final Model')}
+        <p>Validated against naive baselines (historical averages by time slot) to demonstrate improved adaptability to day-level variation. Focused on structural correctness — separating “how much demand” from “when demand occurs” — rather than optimizing a single metric like MAPE.</p>
+        <div class="modal-inline-img"><img src="stats6.JPG" alt="" /></div>
       </div>
-
+  
       <div class="modal-section">
-        <h3>Results & Presentation</h3>
-        <p>Presented findings to judges, walking through our methodology, model decisions, and performance metrics. Emphasized interpretability — showing which features drove predictions and where the model struggled.</p>
-        ${imgPlaceholder('Final Presentation Slide')}
+        <h3>Business-Aware Optimization</h3>
+        <p>Incorporated domain-specific cost asymmetry into predictions by applying a +7% upward bias to call volume forecasts. This intentionally reduced understaffing risk — aligning model behavior with real-world penalty structures rather than purely statistical accuracy.</p>
+        <div class="modal-inline-img"><img src="stats5.JPG" alt="" /></div>
       </div>
-
+  
+      <div class="modal-section">
+        <h3>Impact & Results</h3>
+        <p>Produced full August forecasts at 30-minute resolution across all clients, enabling identification of high-risk understaffing days. Translated predictions into actionable staffing insights by comparing forecasted demand against workforce capacity.</p>
+      </div>
+  
       <div class="modal-section">
         <h3>Tech Stack</h3>
-        ${techList(['Python', 'PyTorch', 'Pandas', 'NumPy', 'Scikit-learn', 'Matplotlib', 'XGBoost'])}
+        ${techList(['Python', 'PyTorch', 'Statsmodels (SARIMAX)', 'Pandas', 'NumPy', 'Scikit-learn', 'Matplotlib'])}
       </div>
     `
   },
@@ -425,41 +455,32 @@ const projectData = {
     title: 'Student Wellness — Patient-Doctor Matching',
     tag: 'Hackathon',
     content: () => `
-      <div class="modal-hero-img">[Cover Image — Matching Platform UI]</div>
+      <div class="modal-hero-img"><img src="Screenshot 2025-09-08 at 7.33.11 PM.png" alt="" /></div>
 
       <div class="modal-section">
-        <h3>The Challenge</h3>
-        <p>Students often struggle to find the right healthcare provider — especially for mental health, where fit matters enormously. At the Code Ada hackathon, we built a platform that translates unstructured symptom descriptions into structured categories and matches patients with the best-fit provider.</p>
-      </div>
-
-      <div class="modal-section">
-        <h3>How Matching Works</h3>
-        <p>Users complete a structured survey about their symptoms, preferences, and constraints. The backend clusters symptom descriptions into medical categories using rule-based NLP, then scores providers based on specialty match, availability, and patient preference weights.</p>
-        ${imgPlaceholder('Survey Flow — Symptom Input to Match Result')}
+        <h3>The Idea</h3>
+        <p>BTHealth is a full-stack mental health provider matching platform designed specifically for college students — a population that faces disproportionately high rates of mental health challenges while simultaneously navigating one of the most opaque and discouraging healthcare experiences: finding a therapist. The platform distills a typically hours-long search process into a three-step flow. Students create an account, submit a brief intake form specifying their zip code, maximum budget, and symptom selections, and receive a ranked list of providers who are available right now, priced within their means, and specialized in what they actually need. The matching algorithm enforces hard constraints — location, budget ceiling, and open patient panels — before applying a soft relevance score based on symptom overlap, so results are always actionable rather than aspirational.</p>
       </div>
 
       <div class="modal-section">
         <h3>Backend Architecture</h3>
-        <ul>
-          <li>Flask API with RESTful endpoints for survey submission and match retrieval</li>
-          <li>SQLite database for provider profiles, patient submissions, and match logs</li>
-          <li>Symptom clustering with keyword extraction and weighted scoring</li>
-          <li>Match ranking with configurable priority weights</li>
-        </ul>
-        ${imgRow('API Endpoint Map', 'Database Schema')}
+        <p>The technical architecture reflects a deliberate focus on correctness and maintainability. The backend is built in Flask with SQLAlchemy handling a normalized relational schema where symptoms act as a shared vocabulary between patients and providers — linked through PatientSymptom and ProviderSpecialty junction tables — making it straightforward to extend the symptom taxonomy or add new matching criteria without restructuring the core data model. JWT authentication keeps sessions stateless, and a public_id UUID on the Provider model decouples internal database keys from anything exposed to the client. The React frontend communicates through a centralized fetch wrapper that handles JWT injection uniformly, keeping authentication logic out of individual page components.</p>
+        <div class="modal-img-row">
+        <div class="modal-inline-img"><img src="Screenshot 2025-09-08 at 7.30.34 PM.png" alt="" /></div>
+        <div class="modal-inline-img"><img src="Screenshot 2025-09-08 at 7.38.21 PM.png" alt="" /></div>
+      </div>
       </div>
 
       <div class="modal-section">
-        <h3>Demo & Results</h3>
-        <p>Delivered a clean, working prototype with a complete flow from survey input to provider recommendation in under 24 hours. The demo emphasized clarity — every match came with an explanation of why that provider was recommended.</p>
-        ${imgPlaceholder('Final Demo — Match Results Screen')}
+        <h3>The Motivation</h3>
+        <p>What makes BTHealth more than a filtered directory is its commitment to transparency at the point of decision. Each matched result includes a human-readable explanation of why the provider was surfaced and a clear budget label — "within your budget" or "partially within your budget" — so students never invest time in a provider only to discover a cost conflict at intake. Results are capped at ten and sorted by match score, reducing the decision paralysis that causes students to abandon their search entirely. The project is grounded in a straightforward conviction: the barrier to getting mental health care should not be the process of finding it.</p>
       </div>
 
       <div class="modal-section">
-        <h3>Tech Stack</h3>
-        ${techList(['Flask', 'Python', 'SQLite', 'HTML/CSS', 'JavaScript', 'NLP'])}
-        ${linksList([{ label: 'GitHub', url: 'https://github.com/noemiamahmud/Code-ADA-2024-For_Portfolio' }])}
-      </div>
+      <h3>Tech Stack</h3>
+      ${techList(['React 19', 'React Router DOM 7', 'Vite', 'Flask', 'Python', 'Flask-SQLAlchemy', 'Flask-Migrate', 'Flask-JWT-Extended', 'SQLite', 'Vanilla CSS'])}
+      ${linksList([{ label: 'GitHub', url: 'https://github.com/noemiamahmud/Code-ADA-2024-For_Portfolio' }])}
+    </div>
     `
   },
 
@@ -467,66 +488,68 @@ const projectData = {
     title: 'NeuroTech @ UIUC Website',
     tag: 'Web Development',
     content: () => `
-      <div class="modal-hero-img">[Cover Image — NeuroTech Homepage]</div>
-
       <div class="modal-section">
-        <h3>About the Organization</h3>
-        <p>NeuroTech @ UIUC is a student organization focused on brain-computer interfaces, neurofeedback, and computational neuroscience research. The club needed a public-facing site that communicated its mission, showcased ongoing projects, and recruited new members.</p>
+        <h3>My Role</h3>
+        <p>As Webmaster for NeuroTech @ UIUC, I designed and built the club's public-facing website from scratch — creating a central hub to connect students with opportunities in neurotechnology, showcase ongoing research projects, and drive membership recruitment.</p>
       </div>
 
       <div class="modal-section">
-        <h3>Design Process</h3>
-        <p>Started with stakeholder interviews to understand what the site needed to communicate. Designed wireframes prioritizing clarity for first-time visitors — a recruiter or a curious freshman should understand what NeuroTech does within 10 seconds of landing.</p>
-        ${imgRow('Wireframe — Homepage Layout', 'Color Palette & Typography')}
+        <h3>Live Preview</h3>
+        <iframe src="https://neurotechatuiuc.com/" class="modal-iframe" title="NeuroTech @ UIUC Live Preview"></iframe>
+      </div>
+
+      <div class="modal-section">
+        <h3>What I Built</h3>
+        <p>The site spans eight pages covering the club's mission, active projects, upcoming events, team roster, a member matching feature, and a join flow. Each page was designed to be immediately legible to someone encountering NeuroTech for the first time — whether a curious freshman or a faculty collaborator — while giving current members a reliable place to stay connected.</p>
       </div>
 
       <div class="modal-section">
         <h3>Implementation</h3>
-        <p>Built with vanilla HTML, CSS, and JavaScript for maximum simplicity and zero build tooling. Responsive across all devices with clean section transitions and consistent branding.</p>
-        ${imgPlaceholder('Desktop & Mobile Side-by-Side')}
+        <p>Built entirely with vanilla HTML, CSS, and JavaScript — no frameworks or build tooling — keeping the site lightweight, easy to hand off, and maintainable by future officers. Fully responsive across desktop and mobile with consistent branding throughout.</p>
       </div>
 
       <div class="modal-section">
         <h3>Tech Stack</h3>
         ${techList(['HTML', 'CSS', 'JavaScript', 'Responsive Design'])}
-        ${linksList([{ label: 'Visit Site', url: 'https://neurotechatuiuc.com' }])}
+        ${linksList([
+          { label: 'GitHub', url: 'https://github.com/noemiamahmud/Neurotech' },
+          { label: 'Visit Site', url: 'https://neurotechatuiuc.com' }
+        ])}
       </div>
     `
   },
 
   'illini-speed': {
-    title: 'Illini Speed Website',
+    title: 'IlliniSpeed — Single Page Website',
     tag: 'Web Development',
     content: () => `
-      <div class="modal-hero-img">[Cover Image — Illini Speed Homepage]</div>
-
       <div class="modal-section">
-        <h3>The Organization</h3>
-        <p>Illini Speed is UIUC's short track speed skating club — one of the largest student skating organizations in the Midwest. As Registration Management Chair, I own the entire digital registration experience: the website, signup forms, and member communications.</p>
+        <h3>About the Project</h3>
+        <p>IlliniSpeed is a fully hand-coded single-page website built for CS 409 (Web Programming) at UIUC. The assignment required implementing a comprehensive set of frontend features from scratch — no libraries, no Bootstrap, no jQuery — using only HTML5, SCSS, and vanilla JavaScript.</p>
       </div>
 
       <div class="modal-section">
-        <h3>UX Redesign</h3>
-        <p>The original site confused new skaters with unclear navigation and buried logistics info. Restructured the information architecture to put the most important things upfront: practice times, safety requirements, equipment needs, and registration links.</p>
-        ${imgRow('Before — Old Layout', 'After — Redesigned Layout')}
+        <h3>Live Preview</h3>
+        <iframe src="https://noemiamahmud.github.io/illinispeed/" class="modal-iframe" title="IlliniSpeed Live Preview"></iframe>
       </div>
 
       <div class="modal-section">
-        <h3>Registration Flow</h3>
-        <p>Built a streamlined signup experience that collects member info, waivers, and payment confirmation in a single clean flow. Reduced support questions by making every step self-explanatory with inline help text and progress indicators.</p>
-        ${imgPlaceholder('Registration Form — Step-by-Step Flow')}
+        <h3>What I Built</h3>
+        <p>The site implements a full suite of interactive UI features: a sticky navbar that resizes on scroll with an active section position indicator, smooth scrolling navigation, a multi-slide carousel with arrow controls, modal windows, an embedded HTML5 video, fixed-position background images, a multi-column layout, and CSS3 animations. All content is fully responsive across four target resolutions from 1024x768 up to 1920x1080.</p>
       </div>
 
       <div class="modal-section">
-        <h3>Mobile Optimization</h3>
-        <p>Most members access the site on their phones at the rink. Ensured fast load times, tap-friendly buttons, and a layout that works in portrait orientation without horizontal scrolling.</p>
-        ${imgPlaceholder('Mobile View — Key Pages')}
+        <h3>Implementation</h3>
+        <p>Built with SCSS (using variables and mixins as required), ES6 JavaScript, and semantic HTML5. Bundled with Webpack and deployed via GitHub Actions to GitHub Pages. No inline styles, no inline scripts, and no table-based layouts — all layout and interactivity written by hand against the spec.</p>
       </div>
 
       <div class="modal-section">
         <h3>Tech Stack</h3>
-        ${techList(['HTML', 'CSS', 'JavaScript', 'UX Design', 'Responsive Design'])}
-        ${linksList([{ label: 'Visit Site', url: 'https://noemiamahmud.github.io/illinispeed/' }])}
+        ${techList(['HTML5', 'SCSS', 'JavaScript (ES6)', 'Webpack', 'Babel', 'GitHub Actions', 'GitHub Pages'])}
+        ${linksList([
+          { label: 'GitHub', url: 'https://github.com/noemiamahmud/illinispeed' },
+          { label: 'Live Site', url: 'https://noemiamahmud.github.io/illinispeed' }
+        ])}
       </div>
     `
   },
@@ -535,71 +558,76 @@ const projectData = {
     title: 'WECE Hacks 2025 Website',
     tag: 'Web Development',
     content: () => `
-      <div class="modal-hero-img">[Cover Image — WECE Hacks Event]</div>
-
       <div class="modal-section">
         <h3>The Event</h3>
-        <p>WECE Hacks is an annual hackathon hosted by Women in Electrical and Computer Engineering at UIUC. As Operations Lead, I coordinated the full event experience for 80+ participants — from registration through demos — while also building and maintaining the event website.</p>
+        <p>WECE Hacks is a three-day hackathon hosted by Women in Electrical and Computer Engineering at UIUC, open to all majors and genders. The 2025 event ran February 21-23 in the ECE Building and featured hardware, software, and cybersecurity (CTF) challenges — with workshops, sponsor networking, and a closing demo day. Sponsors included Union Pacific, Collins Aerospace, Marvell, and National Instruments.</p>
       </div>
 
       <div class="modal-section">
-        <h3>Website Design</h3>
-        <p>The site served as the single source of truth for participants: schedule, venue info, FAQ, sponsor logos, and registration links. Designed for scannability — attendees should find what they need in under 5 seconds.</p>
-        ${imgRow('Homepage — Hero & Schedule', 'FAQ & Sponsor Section')}
+        <h3>Live Preview</h3>
+        <iframe src="https://noemiamahmud.github.io/wecehacks.github.io/" class="modal-iframe" title="WECE Hacks 2025 Live Preview"></iframe>
+      </div>
+
+      <div class="modal-section">
+        <h3>Website</h3>
+        <p>I built and maintained the event website as the single source of truth for participants. The site covers registration, a live countdown timer, the full three-day schedule, sponsor recognition, an FAQ, and a curated tools and resources section to help first-time hackers get set up with VS Code, Git, and GitHub before arriving.</p>
       </div>
 
       <div class="modal-section">
         <h3>Event Operations</h3>
-        <p>Managed planning timelines, task ownership across a team of volunteers, and day-of execution. Coordinated participant flow through check-in, workshops, hacking periods, and final presentations.</p>
-        ${imgPlaceholder('Event Day — Participants Hacking')}
-      </div>
-
-      <div class="modal-section">
-        <h3>Lessons Learned</h3>
-        <p>Running an 80-person event under real constraints (budget, venue, timeline) taught me more about project management than any course. The biggest lesson: clear communication eliminates 90% of logistical problems before they happen.</p>
-        ${imgPlaceholder('Team Photo — Post-Event')}
+        <p>As Operations Lead, I coordinated the full event experience — from pre-event registration and team formation logistics through day-of check-in, workshop flow, hacking periods, and final presentations. The event ran across three days with structured workshops in hardware and software, an open working period with a sponsor tech table, and a Sunday CTF co-organized with SIGPwny.</p>
       </div>
 
       <div class="modal-section">
         <h3>Tech Stack</h3>
-        ${techList(['HTML', 'CSS', 'JavaScript', 'Event Operations'])}
-        ${linksList([{ label: 'Visit Site', url: 'https://noemiamahmud.github.io/wecehacks.github.io/' }])}
+        ${techList(['HTML', 'CSS', 'JavaScript', 'GitHub Pages'])}
+        ${linksList([
+          { label: 'GitHub', url: 'https://github.com/noemiamahmud/wecehacks.github.io' },
+          { label: 'Visit Site', url: 'https://noemiamahmud.github.io/wecehacks.github.io/' }
+        ])}
       </div>
     `
   },
 
   'misc': {
-    title: 'Fun & Random — Miscellaneous Projects',
+    title: 'Short Track Speed Skating',
     tag: 'Misc',
     content: () => `
-      <div class="modal-hero-img">[Cover Image — Assorted Side Projects]</div>
+      <div class="modal-hero-img"><img src="IMG_6747.JPG" alt="" /></div>
 
       <div class="modal-section">
-        <h3>About This Collection</h3>
-        <p>Not everything fits neatly into a category. These are side projects, experiments, and creative builds that came out of curiosity, late-night ideas, or just wanting to learn something new.</p>
+        <h3>The Sport</h3>
+        <p>Short track speed skating is one of the most explosive and tactical ice sports in the world — races happen on a 111-meter oval, skaters reach speeds over 30 mph, and positioning matters as much as raw speed. I've been competing since childhood, and the sport has shaped how I approach everything — from problem-solving under pressure to leading teams.</p>
       </div>
 
       <div class="modal-section">
-        <h3>Automation Scripts</h3>
-        <p>A collection of Python scripts for automating repetitive tasks — file organization, batch image resizing, data format conversion, and web scraping utilities built for personal use and later shared with lab teammates.</p>
-        ${imgPlaceholder('Script Output — Batch Processing Log')}
+        <h3>Competitive Career</h3>
+        <p>Throughout high school, I competed at the national level in short track speed skating, earning a national ranking and setting state records. The training was year-round — on-ice technique sessions, off-ice conditioning, and race strategy review. Competing at that level taught me discipline, how to perform under pressure, and how to recover from setbacks quickly.</p>
+        <div class="modal-img-row">
+        <div class="modal-inline-img"><img src="NorthBurkeOpen2023_173 2.jpg" alt="" /></div>
+        <div class="modal-inline-img"><img src="IMG_6375.JPG" alt="" /></div>
+      </div>
       </div>
 
       <div class="modal-section">
-        <h3>Creative Coding Experiments</h3>
-        <p>Generative art sketches, audio visualizers, and interactive canvas animations built for fun. Some made it into other projects (like this portfolio's neural banner), most just lived in a weekend notebook.</p>
-        ${imgRow('Generative Art — Particle System', 'Audio Visualizer Screenshot')}
+        <h3>State Records & National Ranking</h3>
+        <p>Held state records and achieved a national ranking that placed me among the top competitors in my age group. Every record came from months of incremental improvement — shaving fractions of a second through better crossover technique, sharper cornering, and smarter race tactics.</p>
+        <div class="modal-inline-img"><img src="IMG_9809.png" alt="" /></div>
       </div>
 
       <div class="modal-section">
-        <h3>Hardware Tinkering</h3>
-        <p>Arduino and Raspberry Pi projects ranging from LED controllers to a simple motion-activated camera trap for wildlife observation near campus.</p>
-        ${imgPlaceholder('Hardware Setup — Arduino Project')}
+        <h3>Transition to College</h3>
+        <p>Coming to UIUC, I transitioned from competitor to community builder. I helped found our Illini speed skating student organization and took on leadership and organizing roles — coordinating practice schedules, recruiting new skaters, and running events to grow the sport on campus.</p>
+        <div class="modal-img-row">
+        <div class="modal-inline-img"><img src="IMG_77720DAAEC75-1 (1).jpeg" alt="" /></div>
+        <div class="modal-inline-img"><img src="IMG_8AF84EE06C93-1 (1).jpeg" alt="" /></div>
+      </div>
       </div>
 
+
       <div class="modal-section">
-        <h3>Tech Stack</h3>
-        ${techList(['Python', 'JavaScript', 'Arduino', 'Raspberry Pi', 'Canvas API', 'p5.js'])}
+        <h3>What Skating Taught Me</h3>
+        <p>Speed skating is a sport of margins — the difference between first and fourth is often hundredths of a second. That mentality carries into everything I do: attention to detail, relentless iteration, and the understanding that consistent effort compounds. The resilience and focus I built on the ice directly translate to how I approach engineering problems and team leadership.</p>
       </div>
     `
   }
