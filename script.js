@@ -172,6 +172,13 @@ const projectData = {
           </div>
         </div>
 
+        <div class="modal-project-item">
+          <div class="modal-project-info">
+            <h3>RecurrentAI - interactive pygame app </h3>
+            <a href="https://github.com/noemiamahmud/RecurrentAI/tree/main" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
+
         <h3>... and more being added from GitHub soon! </h3>
 
       </div>
