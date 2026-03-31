@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact | Noemia L. Mahmud</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-logo">Noemia L. Mahmud</a>
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="contact.html" class="active">Contact</a></li>
+        <li><a href="https://github.com/noemiamahmud">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Animated Neural Banner -->
+  <div class="neural-banner">
+    <canvas id="neural-canvas"></canvas>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="contact-layout">
+
+        <div class="contact-info">
+          <h2>Get in Touch</h2>
+          <p>Feel free to reach out for collaborations, research opportunities, or just to say hello.</p>
+
+          <div class="contact-links">
+            <a href="mailto:noemiamahmud@gmail.com" class="contact-link-item">
+              <div class="cl-icon">@</div>
+              <div>
+                <div class="cl-label">Email</div>
+                <div class="cl-value">noemiamahmud@gmail.com</div>
+              </div>
+            </a>
+
+            <a href="https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/" target="_blank" rel="noopener noreferrer" class="contact-link-item">
+              <div class="cl-icon">in</div>
+              <div>
+                <div class="cl-label">LinkedIn</div>
+                <div class="cl-value">noemia-mahmud</div>
+              </div>
+            </a>
+
+            <a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer" class="contact-link-item">
+              <div class="cl-icon">&lt;/&gt;</div>
+              <div>
+                <div class="cl-label">GitHub</div>
+                <div class="cl-value">noemiamahmud</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <div class="contact-form">
+          <h3>Send a Message</h3>
+          <form id="contact-form" onsubmit="handleContactForm(event)">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" required />
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" required></textarea>
+            </div>
+            <button type="submit">Send Message</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Noemia L. Mahmud</p>
+      <div class="footer-links">
+        <a href="mailto:noemiamahmud@gmail.com">Email</a>
+        <a href="https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

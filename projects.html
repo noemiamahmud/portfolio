@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Projects | Noemia L. Mahmud</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-logo">Noemia L. Mahmud</a>
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="projects.html" class="active">Projects</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="https://github.com/noemiamahmud">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Animated Neural Banner -->
+  <div class="neural-banner">
+    <canvas id="neural-canvas"></canvas>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <h1 class="section-title">Projects</h1>
+      <p class="section-subtitle">Notable I've built, researched, and shipped.</p>
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="ai">Applied AI</button>
+        <button class="filter-btn" data-filter="ml">Machine Learning</button>
+        <button class="filter-btn" data-filter="research">Research</button>
+        <button class="filter-btn" data-filter="fullstack">Full Stack</button>
+        <button class="filter-btn" data-filter="hackathon">Hackathon</button>
+        <button class="filter-btn" data-filter="web">Web Development</button>
+        <button class="filter-btn" data-filter="misc">Misc</button>
+      </div>
+
+      <!-- Featured: Applied AI (full-width) -->
+      <div class="project-card project-card-featured" data-category="ai" data-project="applied-ai" id="applied-ai">
+        <div class="project-card-img">[Image Placeholder]</div>
+        <div class="project-card-body">
+          <h3>Applied AI &mdash; Course Projects Collection</h3>
+          <span class="project-card-tag">Applied AI</span>
+          <p class="project-card-summary">A portfolio of AI/ML projects from coursework — spanning neural networks, NLP, computer vision, and reinforcement learning.</p>
+        </div>
+      </div>
+
+      <!-- Project cards -->
+      <div class="projects-grid" id="projects-grid">
+
+        <div class="project-card" data-category="ml" data-project="rag-chatbot" id="rag-chatbot">
+          <div class="project-card-img">[Image Placeholder]</div>
+          <div class="project-card-body">
+            <h3>AI Healthcare RAG Chatbot</h3>
+            <span class="project-card-tag">Machine Learning</span>
+          </div>
+          
+        </div>
+        <div class="project-card" data-category="hackathon" data-project="datathon" id="datathon">
+          <div class="project-card-img">[Image Placeholder]</div>
+          <div class="project-card-body">
+            <h3>Datathon &mdash; Neural Network Modeling</h3>
+            <span class="project-card-tag">Hackathon</span>
+          </div>
+        </div>
+        <div class="project-card" data-category="research" data-project="deeplabcut" id="deeplabcut">
+          <div class="project-card-img">[Image Placeholder]</div>
+          <div class="project-card-body">
+            <h3>Rat Behavioral Monitoring</h3>
+            <span class="project-card-tag">Neural Network Modeling</span>
+          </div>
+        </div>
+
+        <div class="project-card" data-category="research" data-project="neurotech-vr" id="neurotech-vr">
+          <div class="project-card-img">[Image Placeholder]</div>
+          <div class="project-card-body">
+            <h3>NeuroTech R&D</h3>
+            <span class="project-card-tag">Research</span>
+          </div>
+        </div>
+
+        <div class="project-card" data-category="fullstack" data-project="brainstorm" id="brainstorm">
+          <div class="project-card-img">[Image Placeholder]</div>
+          <div class="project-card-body">
+            <h3>Web-Cite &mdash; AI Assisted Research</h3>
+            <span class="project-card-tag">Full Stack</span>
+          </div>
+        </div>
+
+
+        <div class="project-card" data-category="hackathon" data-project="code-to-cure" id="code-to-cure">
+          <div class="project-card-img">[Image Placeholder]</div>
+          <div class="project-card-body">
+            <h3>Student Wellness &mdash; Patient-Doctor Matching</h3>
+            <span class="project-card-tag">Hackathon</span>
+          </div>
+        </div>
+
+
+        <div class="project-card" data-category="web" data-project="neurotech-site" id="neurotech-site">
+          <div class="project-card-img">[Image Placeholder]</div>
+          <div class="project-card-body">
+            <h3>NeuroTech @ UIUC Website</h3>
+            <span class="project-card-tag">Web Development</span>
+          </div>
+        </div>
+
+        <div class="project-card" data-category="web" data-project="illini-speed" id="illini-speed">
+          <div class="project-card-img">[Image Placeholder]</div>
+          <div class="project-card-body">
+            <h3>Illini Speed Website</h3>
+            <span class="project-card-tag">Web Development</span>
+          </div>
+        </div>
+
+        <div class="project-card" data-category="web" data-project="wece-hacks" id="wece-hacks">
+          <div class="project-card-img">[Image Placeholder]</div>
+          <div class="project-card-body">
+            <h3>WECE Hacks 2025 Website</h3>
+            <span class="project-card-tag">Web Development</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Fun & Random (full-width, below grid) -->
+      <div class="project-card project-card-featured" data-category="misc" data-project="misc" id="misc" style="margin-top: 24px;">
+        <div class="project-card-img">[Image Placeholder]</div>
+        <div class="project-card-body">
+          <h3>Fun &amp; Random &mdash; Miscellaneous Projects</h3>
+          <span class="project-card-tag">Misc</span>
+          <p class="project-card-summary">Side projects, experiments, and creative builds that didn't fit a category but were too fun not to share.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Modal (rich content populated by JS) -->
+  <div class="modal-overlay" id="project-modal">
+    <div class="modal">
+      <button class="modal-close" aria-label="Close">&times;</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Noemia L. Mahmud</p>
+      <div class="footer-links">
+        <a href="mailto:noemiamahmud@gmail.com">Email</a>
+        <a href="https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

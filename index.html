@@ -3,57 +3,183 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Noemia L Mahmud | Portfolio</title>
+  <title>Noemia L. Mahmud | Portfolio</title>
   <link rel="stylesheet" href="styles.css"/>
-
-  <!-- Optional: If you actually want Poppins to load consistently -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
   <!-- Navigation -->
   <nav class="navbar">
-    <h1 class="site-title">Noemia L. Mahmud | Portfolio</h1>
-    <div class="nav-right">
-      <a href="mailto:noemiamahmud@gmail.com">Email</a>
-      <a href="https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-      <a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer">GitHub</a>
-      <a href="https://drive.google.com/file/d/1a5KK6eg_4d5hkI7UKKVegxdsf7iyWWrS/view?usp=sharing" target="_blank" rel="noopener noreferrer">Resume</a>
+    <div class="container">
+      <a href="index.html" class="nav-logo">Noemia L. Mahmud</a>
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="https://github.com/noemiamahmud">GitHub</a></li>
+      </ul>
     </div>
   </nav>
 
-  <!-- Interactive Neuron -->
-  <div class="sketchfab-container">
-    <iframe
-      id="sketchfab-frame"
-      title="Neurons"
-      frameborder="0"
-      allowfullscreen
-      mozallowfullscreen="true"
-      webkitallowfullscreen="true"
-      allow="autoplay; fullscreen; xr-spatial-tracking"
-      src="https://sketchfab.com/models/20e930a5fae5457fa6d1738afa00c7bb/embed?autostart=1&ui_infos=0&ui_controls=1&ui_annotations=0&ui_hint=0&ui_help=0&ui_inspector=0&ui_stop=0&ui_vr=0&ui_watermark=0&ui_watermark_link=0&preload=1">
-    </iframe>
+  <!-- Animated Neural Banner -->
+  <div class="neural-banner">
+    <canvas id="neural-canvas"></canvas>
   </div>
 
-  <!-- Section Buttons -->
-  <div class="overlay-buttons" role="navigation" aria-label="Portfolio sections">
-    <button data-section="internships"><span class="num">1</span> Internship Experience</button>
-    <button data-section="student-orgs"><span class="num">2</span> Student Organizations & Leadership</button>
-    <button data-section="research"><span class="num">3</span> Research</button>
-    <button data-section="competitions"><span class="num">4</span> Competitions & Hackathons</button>
-    <button data-section="extracurriculars"><span class="num">5</span> Recreational Extracurriculars</button>
-  </div>
-
-  <!-- Info Panel -->
-  <section id="info-panel" class="hidden" aria-live="polite">
-    <button class="close-btn" type="button" onclick="closePanel()" aria-label="Close panel">✕</button>
-    <div id="info-content" class="info-content"></div>
+  <!-- About / Intro -->
+  <section class="section">
+    <div class="container">
+      <div class="about-header">
+        <div class="about-avatar">
+          <img src="9DBA5371-0ED2-412D-92C9-69E50253F11F.JPEG" alt="Noemia L. Mahmud" />
+        </div>
+        <div class="about-intro">
+          <h1>Noemia L. Mahmud</h1>
+          <p class="about-degree">Neuroscience + Computer Science</p>
+          <p class="about-school">University of Illinois Urbana-Champaign</p>
+          <p class="about-bio">
+            <P></P>
+            I'm a student at UIUC pursuing a B.S. in Brain and Cognitive Science with a minor in Computer Science (expected December 2026). My work sits at the crossroads of neuroscience, artificial intelligence, and software engineering — with a particular focus on systems that are robust, explainable, and built for the real world.
+<p></p>
+This summer, I'll be joining Brookhaven National Laboratory as an AI Model Developer Intern, developing spatiotemporal deep learning models for complex neuroscience datasets — contributing to scientific discovery through interpretable, production-ready AI.
+          </p>
+          <div class="hero-links" style="justify-content: flex-start; margin-top: 20px;">
+            <a href="projects.html" class="btn-primary">View My Projects!</a>
+            <a href="https://drive.google.com/file/d/1a5KK6eg_4d5hkI7UKKVegxdsf7iyWWrS/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="btn-secondary">Resume</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
+
+  <!-- Experience -->
+  <section class="section" style="background: var(--color-bg-alt);">
+    <div class="container">
+      <h2 class="section-title">Experience</h2>
+      <p class="section-subtitle">Where I've worked and contributed.</p>
+
+      <div class="exp-grid">
+        <div class="exp-card">
+          <span class="exp-date">Current</span>
+          <h3>AI Model Development Intern</h3>
+          <span class="exp-company">Brookhaven National Laboratory</span>
+          <p class="exp-desc">Developing and evaluating deep learning models in Python/PyTorch for spatiotemporal neuroscience data, with a focus on learning from missing, irregular, and fragmented sensor measurements to improve robustness and the reliability of downstream analysis.</p>
+        </div>
+        <div class="exp-card">
+          <span class="exp-date">Feb 2026 &ndash; Present</span>
+          <h3>Member of Technical Staff</h3>
+          <span class="exp-company">Agentic AI @ UIUC</span>
+          <p class="exp-desc">Developed a full-stack retrieval-augmented application integrating document ingestion pipelines, vector search, and LLM-based reasoning, with a focus on reliability and scalable API design to reduce hallucinations and improve reliability of user health queries.</p>
+        </div>
+        <div class="exp-card">
+          <span class="exp-date">May 2025 &ndash; January 2026</span>
+          <h3>Software Development Intern &amp; Lab Assistant</h3>
+          <span class="exp-company">Gulley Lab for Neuropsychopharmacology, UIUC</span>
+          <p class="exp-desc">Developing an end-to-end DeepLabCut computer vision validation pipeline to cross-check behavioral logs with synchronized rodent video data, train CNN pose-tracking models, build timestamp-aligned visual overlays, and automate anomaly detection across large experimental datasets to improve behavioral data integrity and analysis reliability.</p>
+        </div>
+        <div class="exp-card">
+          <span class="exp-date">Jan 2025 &ndash; Feb 2026</span>
+          <h3>VR Development Engineer &amp; Researcher</h3>
+          <span class="exp-company">NeuroTech @ UIUC</span>
+          <p class="exp-desc">Built a biofeedback therapy game prototype using Python–Unity (C#) integration and Game AI to drive real-time adaptive heart-rate feedback. Pitched and demoed the product at the Cozad New Venture Challenge, contributing to business strategy and investor-facing materials. </p>
+        </div>
+        <div class="exp-card">
+          <span class="exp-date">Aug 2024 &ndash; May 2025</span>
+          <h3>Frontend Software & Hackathon Logistics Chair </h3>
+          <span class="exp-company">Women in Electrical and Computer Engineering</span>
+          <p class="exp-desc">Managed web development and UX, event planning, and workshop events for the WECE Hacks Hackathon Chair</p>
+        </div>
+
+        <div class="exp-card">
+          <span class="exp-date">Jan 2024 &ndash; Jan 2025</span>
+          <h3>Java Programming Tutor</h3>
+          <span class="exp-company">CS 124, UIUC</span>
+          <p class="exp-desc">Taught OOP fundamentals, debugging strategies, and algorithmic thinking to introductory CS students.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Skills -->
+  <section class="section">
+    <div class="container">
+      <div class="skills-section">
+        <h2 class="section-title">Skills</h2>
+        <p class="section-subtitle">Technical and research competencies.</p>
+
+        <div class="skills-grid">
+          <div class="skill-category">
+            <h3>Languages</h3>
+            <ul>
+              <li>Python</li>
+              <li>JavaScript / TypeScript</li>
+              <li>Java</li>
+              <li>C#</li>
+              <li>SQL</li>
+              <li>HTML / CSS</li>
+            </ul>
+          </div>
+          <div class="skill-category">
+            <h3>AI / ML</h3>
+            <ul>
+              <li>PyTorch</li>
+              <li>Hugging Face Transformers</li>
+              <li>LangChain</li>
+              <li>RAG Pipelines</li>
+              <li>Prompt Engineering</li>
+              <li>Fine-Tuning</li>
+              <li>Vector Databases</li>
+              <li>Computer Vision</li>
+            </ul>
+          </div>
+          <div class="skill-category">
+            <h3>Frameworks &amp; Infrastructure</h3>
+            <ul>
+              <li>React</li>
+              <li>Flask / FastAPI</li>
+              <li>Unity</li>
+              <li>Git</li>
+              <li>Docker</li>
+              <li>Linux / CLI</li>
+              <li>REST APIs</li>
+            </ul>
+          </div>
+          <div class="skill-category">
+            <h3>Data &amp; Research</h3>
+            <ul>
+              <li>NumPy / Pandas</li>
+              <li>DeepLabCut</li>
+              <li>EEG / Biosignal Processing</li>
+              <li>Data Pipelines</li>
+              <li>Experiment Design</li>
+              <li>Scientific Writing</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2026 Noemia L. Mahmud</p>
+      <div class="footer-links">
+        <a href="mailto:noemiamahmud@gmail.com">Email</a>
+        <a href="https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
   <script src="script.js"></script>
 </body>
 </html>
