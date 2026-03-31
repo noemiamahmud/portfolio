@@ -251,6 +251,7 @@ const projectData = {
       <div class="modal-section">
         <h3>Tech Stack</h3>
         ${techList(['Python', 'DeepLabCut', 'OpenCV', 'Pandas', 'NumPy', 'Computer Vision', 'Pose Estimation'])}
+        ${linksList([{ label: 'GitHub', url: 'https://github.com/noemiamahmud/rat-surveillance-app' }])}
       </div>
     `
   },
@@ -352,6 +353,7 @@ const projectData = {
       <div class="modal-section">
         <h3>Tech Stack</h3>
         ${techList(['React', 'FastAPI', 'Python', 'LangChain', 'Vector DB', 'PDF Parsing', 'LLM', 'Tailwind CSS'])}
+        ${linksList([{ label: 'GitHub', url: 'https://github.com/noemiamahmud/web-cite' }])}
       </div>
     `
   },
