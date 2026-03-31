@@ -140,40 +140,38 @@ const projectData = {
     title: 'Applied AI — Course Projects Collection',
     tag: 'Applied AI',
     content: () => `
-
-<h1>SITE CURRENTLY UNDER CONSTRUCTION- See github for projects in applied AI </h1>
       <div class="modal-section">
-        <h3>Overview</h3>
-        <p>A curated portfolio of AI and machine learning projects completed through university coursework, spanning a range of architectures, domains, and techniques. Each project emphasizes hands-on implementation, rigorous evaluation, and clear documentation.</p>
+        <p>A collection of AI/ML projects from coursework — spanning neural networks, NLP, computer vision, and reinforcement learning.</p>
       </div>
 
-      <div class="modal-section">
-        <h3>Image Classification with CNNs</h3>
-        <p>Built and trained convolutional neural networks from scratch on benchmark datasets. Explored architectures from simple multi-layer nets to ResNet-style skip connections, with systematic ablation studies on depth, dropout, and data augmentation.</p>
-        <div class="modal-img-row">
-      </div>
-      </div>
+      <div class="modal-project-list">
 
-      <div class="modal-section">
-        <h3>Sentiment Analysis with Transformers</h3>
-        <p>Fine-tuned a pre-trained BERT model for multi-class sentiment classification on product reviews. Built a preprocessing pipeline, experimented with learning rate schedules, and analyzed attention maps to interpret model decisions.</p>
-      </div>
+        <div class="modal-project-item">
+          <div class="modal-project-preview"><img src="IMG_6747.JPG" alt="" /></div>
+          <div class="modal-project-info">
+            <h3>LLM DJ BOT</h3>
+            <a href="https://github.com/noemiamahmud/LLM_DJ_BOT" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
 
-      <div class="modal-section">
-        <h3>Reinforcement Learning Agent</h3>
-        <p>Implemented Deep Q-Networks (DQN) and Proximal Policy Optimization (PPO) agents in OpenAI Gym environments. Compared convergence speed, reward stability, and generalization across environment variants.</p>
-        <div class="modal-img-row">
-      </div>
-      </div>
+        <div class="modal-project-item">
+          <div class="modal-project-preview"><img src="IMG_6747.JPG" alt="" /></div>
+          <div class="modal-project-info">
+            <h3>Multi Agent Debater - Debate on Ethics of AI Art </h3>
+            <a href="https://github.com/noemiamahmud/The_ART_Debate" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
 
-      <div class="modal-section">
-        <h3>Generative Models</h3>
-        <p>Trained a Variational Autoencoder (VAE) and a small GAN on the CelebA dataset. Explored latent space interpolation, mode collapse mitigation, and FID scoring to evaluate generation quality.</p>
-      </div>
+        <div class="modal-project-item">
+          <div class="modal-project-preview"><img src="IMG_6747.JPG" alt="" /></div>
+          <div class="modal-project-info">
+            <h3>Text Operations Toolkit</h3>
+            <a href="https://github.com/noemiamahmud/Text_Operations_LLM" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
 
-      <div class="modal-section">
-        <h3>Tech Stack</h3>
-        ${techList(['PyTorch', 'TensorFlow', 'scikit-learn', 'Hugging Face', 'NumPy', 'Pandas', 'Matplotlib', 'Jupyter', 'Python'])}
+        <h3>... and more being added from GitHub soon! </h3>
+
       </div>
     `
   },
@@ -395,49 +393,46 @@ const projectData = {
     tag: 'Hackathon',
     content: () => `
       <div class="modal-hero-img"><img src="stats1.png" alt="" /></div>
-  
+
       <div class="modal-section">
         <h3>The Problem</h3>
         <p>Competed in a datathon focused on forecasting call center demand for ~4M monthly calls across multiple clients. The challenge was not just accuracy — but minimizing asymmetric business costs, where understaffing (missed SLAs, abandoned calls) is significantly more expensive than overstaffing.</p>
       </div>
-  
+
       <div class="modal-section">
-        <h3>Data Exploration & Preprocessing</h3>
-        <p>Worked with multi-resolution time series data: two years of daily metrics and high-frequency (30-min interval) call data. Identified missing days, seasonal patterns, and strong intraday structure. Built preprocessing pipelines to clean gaps, encode temporal features (day-of-week, holidays), and align daily + interval datasets for modeling.</p>
-        <div class="modal-img-row">
-          <div class="modal-inline-img"><img src="stats2.png" alt="" /></div>
-          <div class="modal-inline-img"><img src="stats3.png" alt="" /></div>
-        </div>
+        <h3>Data & Approach</h3>
+        <p>Worked with multi-resolution time series data: two years of daily metrics and high-frequency 30-minute interval call data. Identified missing days, seasonal patterns, and strong intraday structure. Built preprocessing pipelines to clean gaps, encode temporal features (day-of-week, holidays), and align daily + interval datasets for modeling.</p>
       </div>
-  
+
+      <div class="modal-img-row">
+        <div class="modal-inline-img"><img src="stats2.png" alt="" /></div>
+        <div class="modal-inline-img"><img src="stats3.png" alt="" /></div>
+      </div>
+
       <div class="modal-section">
         <h3>Model Architecture</h3>
-        <p>Designed a two-stage forecasting system:
-        <br><br>
-        • <b>Stage 1 (Daily Forecasting):</b> SARIMAX models with seasonal components and exogenous variables (weekends, holidays) to predict daily call volume, handle time, and abandon rate.<br>
-        • <b>Stage 2 (Intraday Distribution):</b> PyTorch neural network mapping day-of-week → 48 interval weights via softmax, learning consistent intraday call patterns.
-        <br><br>
-        Combined both stages to generate full 30-minute forecasts per day.</p>
-        <div class="modal-inline-img"><img src="stats4.png" alt="" /></div>
+        <p><b>Stage 1 — Daily Forecasting:</b> SARIMAX models with weekly seasonal period, trained on two years of history with weekend, holiday, and near-holiday exogenous regressors. Produces daily total forecasts for call volume, handle time, and abandon rate — 12 models across 4 clients.</p>
+        <p><b>Stage 2 — Intraday Distribution:</b> PyTorch feedforward network mapping day-of-week (7-dim one-hot) to 48 interval weights via softmax, learning how call volume distributes across each half-hour slot. One network per client, trained on 90 days of interval data.</p>
+        <p>Final output: SARIMAX daily total x neural network interval weights x 1.07 upward bias.</p>
       </div>
-  
+
+      <div class="modal-inline-img"><img src="stats4.png" alt="" /></div>
+
       <div class="modal-section">
-        <h3>Training & Evaluation</h3>
-        <p>Validated against naive baselines (historical averages by time slot) to demonstrate improved adaptability to day-level variation. Focused on structural correctness — separating “how much demand” from “when demand occurs” — rather than optimizing a single metric like MAPE.</p>
-        <div class="modal-inline-img"><img src="stats6.JPG" alt="" /></div>
+        <h3>Asymmetric Optimization</h3>
+        <p>The scoring formula penalizes understaffing more heavily than overstaffing. Rather than optimizing for raw accuracy, we applied a deliberate +7% upward bias to all call volume forecasts — shifting the error distribution so that when the model is wrong, it errs toward overstaffing, which costs Synchrony less.</p>
       </div>
-  
+
+      <div class="modal-img-row">
+        <div class="modal-inline-img"><img src="stats5.png" alt="" /></div>
+        <div class="modal-inline-img"><img src="stats6.png" alt="" /></div>
+      </div>
+
       <div class="modal-section">
-        <h3>Business-Aware Optimization</h3>
-        <p>Incorporated domain-specific cost asymmetry into predictions by applying a +7% upward bias to call volume forecasts. This intentionally reduced understaffing risk — aligning model behavior with real-world penalty structures rather than purely statistical accuracy.</p>
-        <div class="modal-inline-img"><img src="stats5.JPG" alt="" /></div>
+        <h3>Results</h3>
+        <p>Produced 1,488 rows of 30-minute forecasts for every day in August 2025 across all four clients — call volume, handle time, and abandon rate. Translated predictions into staffing capacity comparisons to flag high-risk understaffing days. 16 trained models total, fully reproducible from a four-notebook pipeline.</p>
       </div>
-  
-      <div class="modal-section">
-        <h3>Impact & Results</h3>
-        <p>Produced full August forecasts at 30-minute resolution across all clients, enabling identification of high-risk understaffing days. Translated predictions into actionable staffing insights by comparing forecasted demand against workforce capacity.</p>
-      </div>
-  
+
       <div class="modal-section">
         <h3>Tech Stack</h3>
         ${techList(['Python', 'PyTorch', 'Statsmodels (SARIMAX)', 'Pandas', 'NumPy', 'Scikit-learn', 'Matplotlib'])}

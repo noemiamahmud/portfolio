@@ -662,21 +662,22 @@ img {
 
 .modal .modal-hero-img {
   width: 100%;
-  aspect-ratio: 16 / 9;
   background: var(--color-placeholder);
   border-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #999;
+  overflow: hidden;
   font-size: 0.9rem;
   margin-bottom: 28px;
   overflow: hidden;
 }
 .modal .modal-hero-img img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  display: block;
+  border-radius: var(--radius);
 }
 
 .modal .modal-section {
@@ -726,21 +727,22 @@ img {
 /* Inline image placeholders within modal sections */
 .modal .modal-inline-img {
   width: 100%;
-  aspect-ratio: 16 / 9;
   background: var(--color-placeholder);
   border-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #777;
+  overflow: hidden;
   font-size: 0.82rem;
   margin: 16px 0;
   overflow: hidden;
 }
 .modal .modal-inline-img img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  display: block;
+  border-radius: var(--radius);
 }
 
 /* Side-by-side image row */
@@ -752,7 +754,73 @@ img {
 }
 .modal .modal-img-row .modal-inline-img {
   margin: 0;
-  aspect-ratio: 4 / 3;
+}
+
+.modal-project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-project-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  transition: border-color 0.2s;
+}
+
+.modal-project-item:hover {
+  border-color: var(--color-accent);
+}
+
+.modal-project-preview {
+  width: 120px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--color-placeholder);
+}
+
+.modal-project-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-project-info {
+  flex: 1;
+}
+
+.modal-project-info h3 {
+  font-size: 1rem;
+  margin: 0 0 6px 0;
+  color: var(--color-heading);
+}
+
+.modal-project-info a {
+  font-size: 0.85rem;
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.modal-project-info a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .modal-project-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .modal-project-preview {
+    width: 100%;
+    height: 140px;
+  }
 }
 
 .modal-video {
