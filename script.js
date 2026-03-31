@@ -140,8 +140,8 @@ const projectData = {
     title: 'Applied AI — Course Projects Collection',
     tag: 'Applied AI',
     content: () => `
-      <div class="modal-hero-img"><img src="IMG_6747.JPG" alt="" /></div>
 
+<h1>SITE CURRENTLY UNDER CONSTRUCTION- See github for projects in applied AI </h1>
       <div class="modal-section">
         <h3>Overview</h3>
         <p>A curated portfolio of AI and machine learning projects completed through university coursework, spanning a range of architectures, domains, and techniques. Each project emphasizes hands-on implementation, rigorous evaluation, and clear documentation.</p>
@@ -151,30 +151,24 @@ const projectData = {
         <h3>Image Classification with CNNs</h3>
         <p>Built and trained convolutional neural networks from scratch on benchmark datasets. Explored architectures from simple multi-layer nets to ResNet-style skip connections, with systematic ablation studies on depth, dropout, and data augmentation.</p>
         <div class="modal-img-row">
-        <div class="modal-inline-img"><img src="IMG_6747.JPG" alt="" /></div>
-        <div class="modal-inline-img"><img src="IMG_6747.JPG" alt="" /></div>
       </div>
       </div>
 
       <div class="modal-section">
         <h3>Sentiment Analysis with Transformers</h3>
         <p>Fine-tuned a pre-trained BERT model for multi-class sentiment classification on product reviews. Built a preprocessing pipeline, experimented with learning rate schedules, and analyzed attention maps to interpret model decisions.</p>
-        <div class="modal-inline-img"><img src="IMG_6747.JPG" alt="" /></div>
       </div>
 
       <div class="modal-section">
         <h3>Reinforcement Learning Agent</h3>
         <p>Implemented Deep Q-Networks (DQN) and Proximal Policy Optimization (PPO) agents in OpenAI Gym environments. Compared convergence speed, reward stability, and generalization across environment variants.</p>
         <div class="modal-img-row">
-        <div class="modal-inline-img"><img src="IMG_6747.JPG" alt="" /></div>
-        <div class="modal-inline-img"><img src="IMG_6747.JPG" alt="" /></div>
       </div>
       </div>
 
       <div class="modal-section">
         <h3>Generative Models</h3>
         <p>Trained a Variational Autoencoder (VAE) and a small GAN on the CelebA dataset. Explored latent space interpolation, mode collapse mitigation, and FID scoring to evaluate generation quality.</p>
-        <div class="modal-inline-img"><img src="IMG_6747.JPG" alt="" /></div>
       </div>
 
       <div class="modal-section">
