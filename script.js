@@ -145,9 +145,13 @@ const projectData = {
       </div>
 
       <div class="modal-project-list">
-
         <div class="modal-project-item">
-          <div class="modal-project-preview"><img src="IMG_6747.JPG" alt="" /></div>
+          <div class="modal-project-info">
+            <h3>RAG Tutor - Study any topic! </h3>
+            <a href="https://github.com/noemiamahmud/RAG_Tutor" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
+        <div class="modal-project-item">
           <div class="modal-project-info">
             <h3>LLM DJ BOT</h3>
             <a href="https://github.com/noemiamahmud/LLM_DJ_BOT" target="_blank" rel="noopener noreferrer">GitHub</a>
@@ -155,7 +159,6 @@ const projectData = {
         </div>
 
         <div class="modal-project-item">
-          <div class="modal-project-preview"><img src="IMG_6747.JPG" alt="" /></div>
           <div class="modal-project-info">
             <h3>Multi Agent Debater - Debate on Ethics of AI Art </h3>
             <a href="https://github.com/noemiamahmud/The_ART_Debate" target="_blank" rel="noopener noreferrer">GitHub</a>
@@ -163,7 +166,6 @@ const projectData = {
         </div>
 
         <div class="modal-project-item">
-          <div class="modal-project-preview"><img src="IMG_6747.JPG" alt="" /></div>
           <div class="modal-project-info">
             <h3>Text Operations Toolkit</h3>
             <a href="https://github.com/noemiamahmud/Text_Operations_LLM" target="_blank" rel="noopener noreferrer">GitHub</a>
