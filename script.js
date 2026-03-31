@@ -218,6 +218,7 @@ const projectData = {
       <div class="modal-section">
         <h3>Tech Stack</h3>
         ${techList(['Python', 'LangChain', 'FAISS', 'sentence-transformers', 'OpenAI API', 'Flask', 'React'])}
+        ${linksList([{ label: 'GitHub', url: 'https://github.com/Agentic-AI-UIUC/fall-agentic-ai-healthcare-search' }])}
       </div>
     `
   },
