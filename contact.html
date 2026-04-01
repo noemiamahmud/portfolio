@@ -69,7 +69,7 @@
 
         <div class="contact-form">
           <h3>Send a Message</h3>
-          <form id="contact-form" onsubmit="handleContactForm(event)">
+          <form id="contact-form" action="https://formspree.io/f/xeepzbjg" method="POST">
             <div class="form-group">
               <label for="name">Name</label>
               <input type="text" id="name" name="name" required />
@@ -82,7 +82,10 @@
               <label for="message">Message</label>
               <textarea id="message" name="message" required></textarea>
             </div>
+            <input type="hidden" name="_subject" value="New message from portfolio contact form" />
+            <input type="hidden" name="_next" value="" id="form-next-url" />
             <button type="submit">Send Message</button>
+            <p id="form-status" style="margin-top:1rem;"></p>
           </form>
         </div>
 

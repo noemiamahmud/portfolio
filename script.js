@@ -709,16 +709,42 @@ function checkHashForProject() {
 }
 window.addEventListener('load', checkHashForProject);
 
-/* ===== Contact form handler (placeholder — no backend) ===== */
-function handleContactForm(e) {
-  e.preventDefault();
-  const form = e.target;
-  const btn = form.querySelector('button[type="submit"]');
-  btn.textContent = 'Sent!';
-  btn.disabled = true;
-  setTimeout(() => {
-    btn.textContent = 'Send Message';
-    btn.disabled = false;
-    form.reset();
-  }, 2000);
-}
+/* ===== Contact form handler (Formspree) ===== */
+(function () {
+  const form = document.getElementById('contact-form');
+  if (!form) return;
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]');
+    const status = document.getElementById('form-status');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+    status.textContent = '';
+
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { Accept: 'application/json' }
+    })
+      .then(function (res) {
+        if (res.ok) {
+          status.textContent = 'Message sent — thank you!';
+          status.style.color = 'var(--color-accent)';
+          form.reset();
+        } else {
+          return res.json().then(function (data) {
+            throw new Error(data.errors ? data.errors.map(function (err) { return err.message; }).join(', ') : 'Send failed');
+          });
+        }
+      })
+      .catch(function (err) {
+        status.textContent = 'Something went wrong: ' + err.message;
+        status.style.color = '#e74c3c';
+      })
+      .finally(function () {
+        btn.textContent = 'Send Message';
+        btn.disabled = false;
+      });
+  });
+})();
