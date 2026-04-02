@@ -270,11 +270,12 @@ const projectData = {
     title: 'Engineering Open House',
     tag: 'Research',
     content: () => `
-      <div class="modal-hero-img"><img src="eoh2.jpg" alt="" /></div>
+      <div class="modal-hero-img"><img src="PNG image.png" alt="" /></div>
 
       <div class="modal-section">
-        <h3>About EOH</h3>
-        <p>Engineering Open House is UIUC's flagship public showcase where student teams demo live projects to thousands of visitors. I presented two projects at EOH — a VR biofeedback system built with NeuroTech @ UIUC, and Melodify, an AI music generator from a hackathon.</p>
+        <h3>NeuroHacks Project</h3>
+        <p>Telekinesis Therapy Game is a browser-based interaction prototype that uses real-time hand tracking to let players "lift" and navigate objects through increasingly complex mazes using only their hand gestures. Built with MediaPipe, the game tracks hand landmarks at low latency — pinching to grab, opening to release — while a live mirrored camera preview with rendered landmarks stays visible in the corner throughout play. An attention monitoring layer watches for prolonged downward gaze and flashes a visual warning after three seconds, keeping the experience grounded in focus and presence. Levels scale in maze density and introduce hazard zones that reset progress, rewarding sustained coordination over raw speed.
+        Beyond the game itself, the project doubles as a modular data pipeline. Interaction metrics stream through a WebSocket-to-OSC relay to TouchDesigner and VCV Rack, enabling live audiovisual responses to player behavior — opening the door for performance art, research instrumentation, or generative sound design tied directly to hand and attention data. The architecture is deliberately layered, separating tracking, gesture logic, rendering, and bridge transport into distinct modules so each layer can be extended or swapped independently. The project sits at the intersection of attention-supportive interaction design, hand-eye coordination gameplay, and neurointeractive experience prototyping.</p>
       </div>
 
       <hr style="border: none; border-top: 1px solid var(--color-border); margin: 32px 0;" />
@@ -288,8 +289,6 @@ const projectData = {
         <h3>Signal Acquisition & BCI Approach</h3>
         <p>While my startup's project details are confidential, a related project of mine is based on the same idea — Neurohack Fall 2025 "Mindlift." This project demonstrates a non-invasive approach to brain–computer interaction using natural micro-behavioral signals tightly coupled with cognitive intent. Instead of relying on EEG or invasive neural hardware, we use high-resolution eye movements, subtle facial muscle activations, and head gestures as a proxy for the user's internal decision-making.</p>
         <p>By turning gaze and micro-expressions into a telekinetic control system, we illustrate how future BCIs can merge computer vision, human cognition, and natural behavior to create interfaces that feel effortless and intuitive — technology responding to what you intend, not what you physically do.</p>
-        <div class="modal-inline-img"><img src="NTX1.png" alt="" /></div>
-        <div class="modal-inline-img"><img src="NTX2.png" alt="" /></div>
       </div>
 
       <div class="modal-section">
@@ -301,6 +300,7 @@ const projectData = {
         <h3>NeuroTech Tech Stack</h3>
         ${techList(['Unity', 'C#', 'Python', 'EEG', 'Heart Rate Sensors', 'VR', 'Biosignal Processing', 'Game AI'])}
         ${linksList([{ label: 'NeuroTech Website', url: 'https://neurotechatuiuc.com' }])}
+        ${linksList([{ label: 'GitHub', url: 'https://github.com/noemiamahmud/Maze-Game' }])}
       </div>
 
       <hr style="border: none; border-top: 1px solid var(--color-border); margin: 32px 0;" />
