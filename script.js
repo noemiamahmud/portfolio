@@ -408,12 +408,12 @@ const projectData = {
 
       <div class="modal-section">
         <h3>The Problem</h3>
-        <p>Competed in a datathon focused on forecasting call center demand for ~4M monthly calls across multiple clients. The challenge was not just accuracy — but minimizing asymmetric business costs, where understaffing (missed SLAs, abandoned calls) is significantly more expensive than overstaffing.</p>
+        <p>Placed <b>3rd out of 214 teams (600+ competitors)</b> in the 2026 Illinois Statistics Datathon. The challenge: forecast inbound call volume, customer care time, and abandon rate for August 2025 across 4 client portfolios — at 30-minute granularity — and optimize staffing decisions under an asymmetric cost function where understaffing is significantly more expensive than overstaffing.</p>
       </div>
 
       <div class="modal-section">
         <h3>Data & Approach</h3>
-        <p>Worked with multi-resolution time series data: two years of daily metrics and high-frequency 30-minute interval call data. Identified missing days, seasonal patterns, and strong intraday structure. Built preprocessing pipelines to clean gaps, encode temporal features (day-of-week, holidays), and align daily + interval datasets for modeling.</p>
+        <p>Worked with two years of daily call metrics and three months of high-frequency 30-minute interval data across 4 portfolios, with up to 30 missing days in some clients. Identified strong intraday structure (9–11 AM peak, near-zero overnight), day-of-week effects (Monday highest, Sunday lowest), and longer-term seasonal trends. Built preprocessing pipelines to impute gaps, encode temporal and calendar features, and align daily and interval datasets for a two-stage modeling architecture.</p>
       </div>
 
       <div class="modal-img-row">
@@ -423,16 +423,16 @@ const projectData = {
 
       <div class="modal-section">
         <h3>Model Architecture</h3>
-        <p><b>Stage 1 — Daily Forecasting:</b> SARIMAX models with weekly seasonal period, trained on two years of history with weekend, holiday, and near-holiday exogenous regressors. Produces daily total forecasts for call volume, handle time, and abandon rate — 12 models across 4 clients.</p>
-        <p><b>Stage 2 — Intraday Distribution:</b> PyTorch feedforward network mapping day-of-week (7-dim one-hot) to 48 interval weights via softmax, learning how call volume distributes across each half-hour slot. One network per client, trained on 90 days of interval data.</p>
-        <p>Final output: SARIMAX daily total x neural network interval weights x 1.07 upward bias.</p>
+        <p><b>Stage 1 — Daily Forecasting (SARIMAX):</b> Trained SARIMAX(1,1,1)(1,1,1,7) models per portfolio per metric — 12 models total — using weekend, US holiday, and near-holiday exogenous regressors to forecast daily totals for call volume (CV), customer care time (CCT), and abandon rate (ABD) across all 31 days of August 2025.</p>
+        <p><b>Stage 2 — Intraday Distribution (PyTorch IntradayNet):</b> A lightweight feedforward network (Linear 7→64→48 + Softmax) trained per portfolio on 90 days of interval data, mapping day-of-week one-hot encodings to 48 normalized slot weights. CV intraday forecasts use the learned weights; CCT and ABD use empirical slot-level means for greater stability.</p>
+        <p>Final output: SARIMAX daily total × IntradayNet slot weights × 1.07 upward bias = 30-minute interval forecasts.</p>
       </div>
 
       <div class="modal-inline-img"><img src="stats4.png" alt="" /></div>
 
       <div class="modal-section">
-        <h3>Asymmetric Optimization</h3>
-        <p>The scoring formula penalizes understaffing more heavily than overstaffing. Rather than optimizing for raw accuracy, we applied a deliberate +7% upward bias to all call volume forecasts — shifting the error distribution so that when the model is wrong, it errs toward overstaffing, which costs Synchrony less.</p>
+        <h3>Asymmetric Cost Optimization</h3>
+        <p>The competition scoring penalized understaffing more heavily than overstaffing. Rather than minimizing raw forecast error, we applied a deliberate +7% upward bias to all CV forecasts post-prediction — shifting the error distribution to favor overstaffing, which carries a lower penalty. CCT and ABD were left unbiased since staffing capacity is driven by call volume alone.</p>
       </div>
 
       <div class="modal-img-row">
@@ -442,7 +442,7 @@ const projectData = {
 
       <div class="modal-section">
         <h3>Results</h3>
-        <p>Produced 1,488 rows of 30-minute forecasts for every day in August 2025 across all four clients — call volume, handle time, and abandon rate. Translated predictions into staffing capacity comparisons to flag high-risk understaffing days. 16 trained models total, fully reproducible from a four-notebook pipeline.</p>
+        <p>Delivered 1,488 rows of 30-minute forecasts (31 days × 48 slots × 4 portfolios) covering CV, CCT, and ABD — 5,952 total forecast points. Translated predictions into a staffing capacity overlay flagging high-risk understaffing days as an early-warning system for SLA risk. 16 trained models total (12 SARIMAX + 4 IntradayNet), fully reproducible across a four-notebook pipeline.</p>
       </div>
 
       <div class="modal-section">
