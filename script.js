@@ -448,6 +448,7 @@ const projectData = {
       <div class="modal-section">
         <h3>Tech Stack</h3>
         ${techList(['Python', 'PyTorch', 'Statsmodels (SARIMAX)', 'Pandas', 'NumPy', 'Scikit-learn', 'Matplotlib'])}
+        ${linksList([{ label: 'View Presentation', url: 'https://mediaspace.illinois.edu/media/t/1_dmkfx20x' }])}
       </div>
     `
   },
