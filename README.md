@@ -1,6 +1,9 @@
 # Noemia L. Mahmud — Portfolio
 
-Personal portfolio website showcasing internships, research, projects, and extracurriculars.
+Personal portfolio showcasing research, internships, and projects at the intersection of
+neuroscience, AI, and software engineering.
+
+Built from scratch — no frameworks, no build step, no dependencies.
 
 ## Running locally
 
@@ -14,34 +17,68 @@ Then visit `http://localhost:8000`.
 
 ## Pages
 
-- **index.html** — Home / landing with hero, Sketchfab 3D model, experience timeline, featured projects
-- **projects.html** — Full project grid with category filtering and detail modals
-- **about.html** — Visual resume: skills, education, research interests
-- **contact.html** — Contact info and message form
+- **index.html** — Hero with an interactive particle field, about, animated stats,
+  scroll-linked experience timeline, selected work, skills
+- **projects.html** — Filterable project grid with detail modals
+- **contact.html** — Contact links and message form (Formspree)
 
-## Replacing image placeholders
+## GitHub activity panel
 
-Project cards and the about page use placeholder slots for images. To add a real image:
+The hero shows a live contribution heatmap, streaks, and a language breakdown.
 
-1. Add your image file to the repo root (or an `images/` folder if you prefer).
-2. In the relevant HTML file, find the `<div class="project-card-img">` for the project you want to update.
-3. Replace the `[Image Placeholder]` text with an `<img>` tag:
+It renders instantly from a snapshot inlined in `index.html`, then refreshes the calendar in
+the background (cached 6 hours). If the network or the upstream service is unavailable, the
+snapshot stays on screen and the badge reads `CACHED` instead of `LIVE` — it never shows an
+error or an empty box.
 
-```html
-<!-- Before -->
-<div class="project-card-img">[Image Placeholder]</div>
+To refresh the committed baseline:
 
-<!-- After -->
-<div class="project-card-img">
-  <img src="your-image.jpg" alt="Project name" />
-</div>
+```bash
+python3 scripts/update-github-stats.py
 ```
 
-4. For the about page headshot, the `<div class="about-avatar">` already references `IMG_6375.JPG`. Replace that `src` with a different photo if desired.
+## Features
 
-5. For project modal images: if a card has an `<img>` inside `.project-card-img`, the modal will automatically display that same image. No additional change needed.
+- Interactive canvas particle field that reacts to the cursor
+- Light / dark theme, remembered across visits
+- Command palette (⌘K / Ctrl+K) to jump to any page, project, or action
+- Scroll-linked timeline, animated counters, tilt + spotlight cards, magnetic buttons
+- Deep links: `projects.html#datathon` opens that project; `projects.html?filter=web` preselects a filter
+- Keyboard accessible throughout (Tab, Enter/Space, Escape, ←/→ between projects)
+- Honors `prefers-reduced-motion` — all animation is disabled for users who ask for it
 
-Recommended image dimensions:
-- **Project cards:** 16:10 aspect ratio (e.g. 800x500)
-- **Modal images:** 16:9 aspect ratio (e.g. 1280x720)
-- **About avatar:** Square (e.g. 400x400)
+## Adding a project
+
+1. Add an entry to the `projectData` object in `script.js` (module 12). The `content()`
+   function returns the modal's HTML.
+2. Add a matching card in `projects.html`:
+
+```html
+<article class="card" data-category="ml" data-project="my-project" id="my-project"
+         role="button" tabindex="0" aria-label="Open My Project" data-tilt data-reveal>
+  <div class="card-media">
+    <img src="img/my-project.jpg" alt="…" loading="lazy" decoding="async" />
+    <span class="card-open">…</span>
+  </div>
+  <div class="card-body">
+    <h3>My Project</h3>
+    <p>One or two sentences on what it does and why it's interesting.</p>
+    <div class="card-meta"><span class="chip">Machine Learning</span></div>
+  </div>
+</article>
+```
+
+The filter counts, command palette entry, and modal prev/next order all update automatically.
+
+## Images
+
+Web-optimized images live in `img/` (JPEG, max 1600px, quality 72). The full-resolution
+originals stay at the repo root as archives — always reference the `img/` copies.
+
+To add a new one:
+
+```bash
+sips -s format jpeg -s formatOptions 72 -Z 1600 "original.png" --out "img/name.jpg"
+```
+
+Recommended: 16:10 for cards, 16:9 for modal images, 4:5 for the portrait.

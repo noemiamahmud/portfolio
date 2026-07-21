@@ -1,185 +1,569 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Noemia L. Mahmud | Portfolio</title>
-  <link rel="stylesheet" href="styles.css"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noemia L. Mahmud — AI/ML Engineer</title>
+  <meta name="description" content="Noemia L. Mahmud — AI/ML Engineer and Agentic Systems Developer. B.S. Brain & Cognitive Science with a CS minor at UIUC. AI Model Development Intern at Brookhaven National Laboratory, building agentic pipelines over fMRI data and neuroscience foundation models." />
+  <meta name="author" content="Noemia L. Mahmud" />
+  <meta name="theme-color" content="#07070c" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Noemia L. Mahmud — AI/ML Engineer & Agentic Systems Developer" />
+  <meta property="og:description" content="Agentic AI systems, retrieval pipelines, and computer vision for scientific work." />
+  <meta property="og:image" content="img/portrait.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Apply the saved theme before first paint to avoid a flash. -->
+  <script>
+    (function () {
+      try {
+        // Dark is the designed default; light is opt-in via the toggle.
+        var t = localStorage.getItem('theme');
+        if (t) document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Navigation -->
+  <div class="grain" aria-hidden="true"></div>
+  <div class="scroll-progress" aria-hidden="true"></div>
+  <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"></div>
+
+  <!-- ===== NAV ===== -->
   <nav class="navbar">
     <div class="container">
-      <a href="index.html" class="nav-logo">Noemia L. Mahmud</a>
-      <button class="nav-toggle" aria-label="Toggle navigation">
-        <span></span><span></span><span></span>
-      </button>
+      <a href="index.html" class="nav-logo">
+        <span class="mark">NM</span>
+        <span>Noemia L. Mahmud</span>
+      </a>
+
       <ul class="nav-links">
         <li><a href="index.html" class="active">Home</a></li>
         <li><a href="projects.html">Projects</a></li>
         <li><a href="contact.html">Contact</a></li>
-        <li><a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer">GitHub</a></li>
       </ul>
+
+      <div class="nav-right">
+        <button class="kbd-btn" data-open-cmdk aria-label="Open command menu">
+          <span>Search</span><kbd>⌘K</kbd>
+        </button>
+        <button class="icon-btn" id="theme-toggle" aria-label="Switch to light theme">
+          <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </nav>
 
-  <!-- Animated Neural Banner -->
-  <div class="neural-banner">
-    <canvas id="neural-canvas"></canvas>
-  </div>
+  <main id="main">
 
-  <!-- About / Intro -->
-  <section class="section">
-    <div class="container">
-      <div class="about-header">
-        <div class="about-avatar">
-          <img src="9DBA5371-0ED2-412D-92C9-69E50253F11F.JPEG" alt="Noemia L. Mahmud" />
-        </div>
-        <div class="about-intro">
-          <h1>Noemia L. Mahmud</h1>
-          <p class="about-degree">Neuroscience + Computer Science</p>
-          <p class="about-school">University of Illinois Urbana-Champaign</p>
-          <p class="about-bio">
-            <P></P>
-            I'm a student at UIUC pursuing a B.S. in Brain and Cognitive Science with a minor in Computer Science (expected December 2026). My work sits at the crossroads of neuroscience, artificial intelligence, and software engineering — with a particular focus on systems that are robust, explainable, and built for the real world.
-<p></p>
-This summer, I'll be joining Brookhaven National Laboratory as an AI Model Developer Intern, developing spatiotemporal deep learning models for complex neuroscience datasets — contributing to scientific discovery through interpretable, production-ready AI.
+    <!-- ===== HERO ===== -->
+    <header class="hero">
+      <canvas id="neural-canvas" aria-hidden="true"></canvas>
+      <div class="aurora" aria-hidden="true"><span class="b1"></span><span class="b2"></span><span class="b3"></span></div>
+      <div class="gridlines" aria-hidden="true"></div>
+
+      <div class="container">
+       <div class="hero-grid">
+        <div class="hero-inner hero-anim">
+          <div>
+            <span class="pill"><span class="dot"></span> Currently at Brookhaven National Laboratory</span>
+          </div>
+
+          <h1>
+            <span class="line"><span>Noemia</span></span>
+            <span class="line"><span class="grad">Mahmud</span></span>
+          </h1>
+
+          <p class="hero-role">
+            <span data-scramble='["AI / ML Engineer","Agentic Systems Developer","Data Analyst"]'>AI / ML Engineer</span><span class="caret"></span>
           </p>
-          <div class="hero-links" style="justify-content: flex-start; margin-top: 20px;">
-            <a href="projects.html" class="btn-primary">View My Projects!</a>
-            <a href="https://drive.google.com/file/d/1a5KK6eg_4d5hkI7UKKVegxdsf7iyWWrS/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="btn-secondary">Resume</a>
+
+          <p class="hero-bio">
+            I build agentic AI systems and ML pipelines for scientific work — LLM agents with real tool
+            access, retrieval systems that cite their sources, and computer vision that turns raw
+            experimental data into results you can trust.
+          </p>
+
+          <div class="hero-actions">
+            <a href="projects.html" class="btn btn--primary" data-magnetic>
+              View my work
+              <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a href="https://drive.google.com/file/d/1a5KK6eg_4d5hkI7UKKVegxdsf7iyWWrS/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="btn btn--ghost" data-magnetic>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+              Résumé
+            </a>
           </div>
+
+          <div class="hero-socials">
+            <a class="icon-btn" href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.23c-3.34.73-4.04-1.42-4.04-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.96 0-1.32.47-2.39 1.24-3.23-.12-.31-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.23 0 4.63-2.81 5.65-5.49 5.95.43.37.82 1.1.82 2.22v3.29c0 .32.21.7.83.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"/></svg>
+            </a>
+            <a class="icon-btn" href="https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.36-1.85 3.59 0 4.25 2.36 4.25 5.44v6.3zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+            </a>
+            <a class="icon-btn" href="mailto:noemiamahmud@gmail.com" aria-label="Email">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- GitHub activity. Renders instantly from the inlined snapshot below,
+             then refreshes the calendar in the background. -->
+        <aside class="gh-panel" id="gh-panel" data-user="noemiamahmud" aria-label="GitHub activity">
+          <div class="gh-bar">
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="gh-crumb">~/github/noemiamahmud</span>
+            <span class="gh-live"><i aria-hidden="true"></i><span class="gh-live-text">cached</span></span>
+          </div>
+
+          <div class="gh-stats">
+            <div class="gh-stat"><b data-gh="total">—</b><span>contributions<br />past year</span></div>
+            <div class="gh-stat"><b data-gh="active">—</b><span>active<br />days</span></div>
+            <div class="gh-stat"><b data-gh="streak">—</b><span>longest<br />streak</span></div>
+            <div class="gh-stat"><b data-gh="repos">—</b><span>public<br />repos</span></div>
+          </div>
+
+          <div class="gh-heat">
+            <div class="gh-scroll">
+              <div class="gh-months" aria-hidden="true"></div>
+              <div class="gh-grid" role="img" aria-label="GitHub contribution heatmap for the past year"></div>
+            </div>
+            <div class="gh-foot">
+              <a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer" class="link-u" style="font-size:.6rem;letter-spacing:.08em;">github.com/noemiamahmud</a>
+              <span class="gh-legend">
+                Less <i></i><i data-l="1"></i><i data-l="2"></i><i data-l="3"></i><i data-l="4"></i> More
+              </span>
+            </div>
+          </div>
+
+          <div class="gh-langs">
+            <div class="gh-bar-track"></div>
+            <div class="gh-lang-keys"></div>
+          </div>
+
+          <div class="gh-tip" role="tooltip"></div>
+        </aside>
+       </div>
+
+       <!-- Snapshot regenerated by scripts/update-github-stats.py — do not hand-edit. -->
+       <script type="application/json" id="gh-data">{"updated":"2026-07-21T18:50:30Z","user":"noemiamahmud","publicRepos":29,"languages":[["Python",9],["JavaScript",4],["TypeScript",4],["HTML",3],["SCSS",1],["C++",1]],"calendar":{"start":"2025-07-20","counts":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,21,1,0,10,2,0,0,2,0,0,0,0,0,0,1,3,0,0,0,0,0,0,0,0,2,0,0,0,1,9,0,0,0,0,0,0,0,0,0,2,0,1,0,1,3,0,4,0,12,0,0,0,0,1,0,0,2,3,1,0,0,0,4,11,0,0,0,0,7,0,4,1,0,3,0,6,2,0,0,0,0,0,4,0,9,5,0,3,0,0,1,11,10,0,0,0,0,2,1,0,1,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,3,0,0,5,0,5,3,0,2,3,0,0,0,0,0,2,0,0,0,0,0,0,0,3,0,0,0,0,0,3,0,0,0,0,0,3,4,0,19,5,12,0,0,2,4,2,2,0,0,0,2,1,0,0,0,0,0,0,0,0,3,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,2,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,3,1,2,4,7,0,0,0,2,8,4,2,0,0,10,16,20,22,18,0,0,2,10,4,11,0,0,0,13,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0]}}</script>
+      </div>
+
+      <div class="scroll-cue" aria-hidden="true">
+        <span>Scroll</span>
+        <span class="rail"></span>
+      </div>
+    </header>
+
+    <!-- ===== MARQUEE ===== -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <div class="marquee-group">
+          <span>LangGraph</span><i></i><span>MCP</span><i></i><span>RAG</span><i></i>
+          <span>PyTorch</span><i></i><span>vLLM</span><i></i><span>Qdrant</span><i></i>
+          <span>LangSmith</span><i></i><span>Computer Vision</span><i></i><span>fMRI</span><i></i>
+          <span>Docker</span><i></i><span>Kubernetes</span><i></i><span>Python</span><i></i>
+        </div>
+        <div class="marquee-group">
+          <span>LangGraph</span><i></i><span>MCP</span><i></i><span>RAG</span><i></i>
+          <span>PyTorch</span><i></i><span>vLLM</span><i></i><span>Qdrant</span><i></i>
+          <span>LangSmith</span><i></i><span>Computer Vision</span><i></i><span>fMRI</span><i></i>
+          <span>Docker</span><i></i><span>Kubernetes</span><i></i><span>Python</span><i></i>
         </div>
       </div>
     </div>
-  </section>
 
+    <!-- ===== ABOUT ===== -->
+    <section class="section" id="about">
+      <div class="container">
+        <div class="about-grid">
+          <div data-reveal="left">
+            <div class="portrait">
+              <img src="img/portrait.jpg" alt="Portrait of Noemia L. Mahmud" width="800" height="1000" />
+              <span class="portrait-badge">Urbana–Champaign, IL</span>
+            </div>
+          </div>
 
-  <!-- Experience -->
-  <section class="section" style="background: var(--color-bg-alt);">
-    <div class="container">
-      <h2 class="section-title">Experience</h2>
-      <p class="section-subtitle">Where I've worked and contributed.</p>
+          <div data-stagger>
+            <span class="eyebrow" data-reveal="fade">About</span>
+            <h2 class="h-lg" data-reveal>
+              Neuroscience taught me how intelligence works.<br />
+              Engineering taught me how to <span class="grad">build it</span>.
+            </h2>
 
-      <div class="exp-grid">
-        <div class="exp-card">
-          <span class="exp-date">Jun 2026 &ndash; Aug 2026</span>
-          <h3>AI Model Development Intern</h3>
-          <span class="exp-company">Brookhaven National Laboratory</span>
-          <p class="exp-desc">Developing and evaluating deep learning models in Python/PyTorch for spatiotemporal neuroscience data, with a focus on learning from missing, irregular, and fragmented sensor measurements to improve robustness and the reliability of downstream analysis.</p>
-        </div>
-        <div class="exp-card">
-          <span class="exp-date">Feb 2026 &ndash; Present</span>
-          <h3>Member of Technical Staff</h3>
-          <span class="exp-company">Agentic AI @ UIUC</span>
-          <p class="exp-desc">Developed a full-stack retrieval-augmented application integrating document ingestion pipelines, vector search, and LLM-based reasoning, with a focus on reliability and scalable API design to reduce hallucinations and improve reliability of user health queries.</p>
-        </div>
-        <div class="exp-card">
-          <span class="exp-date">May 2025 &ndash; January 2026</span>
-          <h3>Software Development Intern &amp; Lab Assistant</h3>
-          <span class="exp-company">Gulley Lab for Neuropsychopharmacology, UIUC</span>
-          <p class="exp-desc">Developing an end-to-end DeepLabCut computer vision validation pipeline to cross-check behavioral logs with synchronized rodent video data, train CNN pose-tracking models, build timestamp-aligned visual overlays, and automate anomaly detection across large experimental datasets to improve behavioral data integrity and analysis reliability.</p>
-        </div>
-        <div class="exp-card">
-          <span class="exp-date">Jan 2025 &ndash; Feb 2026</span>
-          <h3>VR Development Engineer &amp; Researcher</h3>
-          <span class="exp-company">NeuroTech @ UIUC</span>
-          <p class="exp-desc">Built a biofeedback therapy game prototype using Python–Unity (C#) integration and Game AI to drive real-time adaptive heart-rate feedback. Pitched and demoed the product at the Cozad New Venture Challenge, contributing to business strategy and investor-facing materials. </p>
-        </div>
-        <div class="exp-card">
-          <span class="exp-date">Aug 2024 &ndash; May 2025</span>
-          <h3>Frontend Software & Hackathon Logistics Chair </h3>
-          <span class="exp-company">Women in Electrical and Computer Engineering</span>
-          <p class="exp-desc">Managed web development and UX, event planning, and workshop events for the WECE Hacks Hackathon Chair</p>
-        </div>
+            <p class="lede" data-reveal>
+              I'm a student at UIUC pursuing a B.S. in Brain and Cognitive Science with a minor in
+              Computer Science (expected December 2026). My work sits at the crossroads of neuroscience,
+              artificial intelligence, and software engineering — with a particular focus on systems that
+              are robust, explainable, and built for the real world.
+            </p>
+            <p class="lede" data-reveal>
+              I'm currently at Brookhaven National Laboratory building agentic pipelines that analyze how
+              frontier LLMs reason over fMRI data and neuroscience foundation models — MCP servers exposing
+              40+ analysis tools, and an LLM-as-judge system that scales evaluation beyond manual review.
+              In August I join Jocasta Neuroscience as an AI Biotech Engineering Consulting Intern, mining
+              genomic data for preclinical Alzheimer's and Parkinson's targets.
+            </p>
 
-        <div class="exp-card">
-          <span class="exp-date">Jan 2024 &ndash; Jan 2025</span>
-          <h3>Java Programming Tutor</h3>
-          <span class="exp-company">CS 124, UIUC</span>
-          <p class="exp-desc">Taught OOP fundamentals, debugging strategies, and algorithmic thinking to introductory CS students.</p>
+            <dl class="about-facts" data-reveal>
+              <div><dt>Degree</dt><dd>B.S. Brain &amp; Cognitive Science</dd></div>
+              <div><dt>Minor</dt><dd>Computer Science</dd></div>
+              <div><dt>University</dt><dd>UIUC</dd></div>
+              <div><dt>Graduating</dt><dd>December 2026</dd></div>
+            </dl>
+          </div>
         </div>
 
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Skills -->
-  <section class="section">
-    <div class="container">
-      <div class="skills-section">
-        <h2 class="section-title">Skills</h2>
-        <p class="section-subtitle">Technical and research competencies.</p>
+    <!-- ===== EXPERIENCE ===== -->
+    <section class="section section--alt" id="experience">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow" data-reveal="fade">Experience</span>
+          <h2 class="h-lg" data-reveal>Where I've worked &amp; what I built there</h2>
+        </div>
 
-        <div class="skills-grid">
-          <div class="skill-category">
-            <h3>Languages</h3>
+        <div class="timeline" data-stagger>
+          <div class="timeline-rail" aria-hidden="true"></div>
+
+          <article class="tl-item" data-reveal>
+            <span class="tl-dot" aria-hidden="true"></span>
+            <div class="tl-card">
+              <div class="tl-top">
+                <span class="tl-logo">JN</span>
+                <div class="tl-titles">
+                  <h3>AI Biotech Engineer Consulting Intern</h3>
+                  <span class="tl-org">Jocasta Neuroscience, Inc. — Scottsdale, AZ</span>
+                </div>
+                <span class="tl-date">Incoming Aug 2026</span>
+              </div>
+              <p>Building and deploying AI pipelines to mine genomic and biomedical datasets for novel soluble Klotho receptor targets, accelerating preclinical drug discovery for Alzheimer's and Parkinson's disease.</p>
+              <div class="tl-tags"><span class="tag">AI Pipelines</span><span class="tag">Genomics</span><span class="tag">Drug Discovery</span></div>
+            </div>
+          </article>
+
+          <article class="tl-item is-current" data-reveal>
+            <span class="tl-dot" aria-hidden="true"></span>
+            <div class="tl-card">
+              <div class="tl-top">
+                <span class="tl-logo">BNL</span>
+                <div class="tl-titles">
+                  <h3>AI Model Development Intern</h3>
+                  <span class="tl-org">Brookhaven National Laboratory — Upton, NY</span>
+                </div>
+                <span class="tl-date">Jun 2026 — Present</span>
+              </div>
+              <p>Built an agentic pipeline (LangGraph, FastMCP) analyzing how frontier LLMs reason and use tools over fMRI data and neuroscience foundation models, with trajectory-level observability via LangSmith.</p>
+              <p>Designed and deployed MCP servers exposing 40+ analysis tools — embedding similarity, ROI reconstruction error, forecasting — giving LLM agents callable access to foundation-model primitives across a 424-region brain atlas.</p>
+              <p>Stood up a two-tier LLM-as-judge evaluation system (Qwen3-30B, vLLM, H100 GPU) generating automated per-step scores and critiques, scaling behavioral analysis beyond manual review.</p>
+              <div class="tl-tags"><span class="tag">LangGraph</span><span class="tag">FastMCP</span><span class="tag">LangSmith</span><span class="tag">vLLM</span></div>
+            </div>
+          </article>
+
+          <article class="tl-item is-current" data-reveal>
+            <span class="tl-dot" aria-hidden="true"></span>
+            <div class="tl-card">
+              <div class="tl-top">
+                <span class="tl-logo">AAI</span>
+                <div class="tl-titles">
+                  <h3>AI/ML Developer — RAG Healthcare Systems</h3>
+                  <span class="tl-org">Agentic AI @ UIUC Developer Team</span>
+                </div>
+                <span class="tl-date">Jan 2026 — Present</span>
+              </div>
+              <p>Built a production RAG system (Qdrant + sentence-transformers) over 2,600 MSD Manual articles (~13,900 chunks), enforcing citation-grounded responses to prevent unsupported LLM claims on medical queries.</p>
+              <div class="tl-tags"><span class="tag">RAG</span><span class="tag">Qdrant</span><span class="tag">Sentence-Transformers</span></div>
+            </div>
+          </article>
+
+          <article class="tl-item" data-reveal>
+            <span class="tl-dot" aria-hidden="true"></span>
+            <div class="tl-card">
+              <div class="tl-top">
+                <span class="tl-logo">BNS</span>
+                <div class="tl-titles">
+                  <h3>Laboratory Assistant</h3>
+                  <span class="tl-org">Behavioral Neuroscience Lab, UIUC — Champaign, IL</span>
+                </div>
+                <span class="tl-date">May 2025 — Dec 2025</span>
+              </div>
+              <p>Built a CNN-based pose-tracking pipeline (DeepLabCut/PyTorch) that automatically classifies 8 behavioral states from raw video and flags drug-condition anomalies, replacing 40% of manual analysis.</p>
+              <p>Credited with data analysis acknowledgements in upcoming behavioral neuroscience papers by Dr. Joshua Gulley.</p>
+              <div class="tl-tags"><span class="tag">DeepLabCut</span><span class="tag">PyTorch</span><span class="tag">Computer Vision</span></div>
+            </div>
+          </article>
+
+          <article class="tl-item" data-reveal>
+            <span class="tl-dot" aria-hidden="true"></span>
+            <div class="tl-card">
+              <div class="tl-top">
+                <span class="tl-logo">NTX</span>
+                <div class="tl-titles">
+                  <h3>ML/CV Systems Developer</h3>
+                  <span class="tl-org">NeuroTech @ UIUC</span>
+                </div>
+                <span class="tl-date">Jan 2025 — Jan 2026</span>
+              </div>
+              <p>Developed computer vision models for real-time eye tracking and visual attention monitoring using MediaPipe; built a modular data pipeline streaming interaction metrics via WebSocket-to-OSC for live physiological signal analysis.</p>
+              <p>Reached finals at the Cozad New Venture Challenge (Spring 2025), pitching a heart-rate biofeedback system; contributed ML architecture design and investor-facing technical demos.</p>
+              <div class="tl-tags"><span class="tag">MediaPipe</span><span class="tag">Computer Vision</span><span class="tag">WebSocket / OSC</span></div>
+            </div>
+          </article>
+
+          <article class="tl-item" data-reveal>
+            <span class="tl-dot" aria-hidden="true"></span>
+            <div class="tl-card">
+              <div class="tl-top">
+                <span class="tl-logo">WCE</span>
+                <div class="tl-titles">
+                  <h3>Frontend Software &amp; Hackathon Logistics Chair</h3>
+                  <span class="tl-org">Women in Electrical and Computer Engineering</span>
+                </div>
+                <span class="tl-date">Aug 2024 — May 2025</span>
+              </div>
+              <p>Managed web development and UX, event planning, and workshop events as WECE Hacks Hackathon Chair.</p>
+              <div class="tl-tags"><span class="tag">Frontend</span><span class="tag">UX</span><span class="tag">Event Ops</span></div>
+            </div>
+          </article>
+
+          <article class="tl-item" data-reveal>
+            <span class="tl-dot" aria-hidden="true"></span>
+            <div class="tl-card">
+              <div class="tl-top">
+                <span class="tl-logo">124</span>
+                <div class="tl-titles">
+                  <h3>Java Programming Tutor</h3>
+                  <span class="tl-org">CS 124, UIUC</span>
+                </div>
+                <span class="tl-date">Jan 2024 — Jan 2025</span>
+              </div>
+              <p>Taught OOP fundamentals, debugging strategies, and algorithmic thinking to introductory CS students.</p>
+              <div class="tl-tags"><span class="tag">Java</span><span class="tag">Teaching</span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FEATURED WORK ===== -->
+    <section class="section" id="work">
+      <div class="container">
+        <div class="section-head" style="display:flex; justify-content:space-between; align-items:flex-end; gap:24px; max-width:none;">
+          <div>
+            <span class="eyebrow" data-reveal="fade">Selected Work</span>
+            <h2 class="h-lg" data-reveal>Things I've <span class="grad">built</span></h2>
+          </div>
+          <a href="projects.html" class="link-u" data-reveal="fade">
+            All projects
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+
+        <div class="work-grid" data-stagger>
+          <a class="card card--wide" href="projects.html#datathon" data-tilt data-reveal>
+            <div class="card-media">
+              <img src="img/stats-1.jpg" alt="Datathon forecasting charts" loading="lazy" decoding="async" />
+            </div>
+            <div class="card-body">
+              <div class="card-meta"><span class="chip chip--award">3rd of 214 teams</span></div>
+              <h3>Workforce Forecasting &amp; Optimization</h3>
+              <p>A two-stage forecasting system — SARIMAX daily models feeding a PyTorch intraday distribution network — producing 5,952 thirty-minute forecast points under an asymmetric staffing cost function. 2026 Illinois Statistics Datathon.</p>
+              <div class="card-meta"><span class="chip">Machine Learning</span></div>
+            </div>
+          </a>
+
+          <a class="card" href="projects.html#deeplabcut" data-tilt data-reveal>
+            <div class="card-media">
+              <img src="img/rat-annotations.jpg" alt="Rodent pose estimation overlay" loading="lazy" decoding="async" />
+              <span class="card-open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+            </div>
+            <div class="card-body">
+              <h3>Rat Behavioral Monitoring</h3>
+              <p>Browser-based neuroscience tool that replaces hours of manual video review with DeepLabCut pose estimation, temporal behavior classification, and LLM-augmented summaries.</p>
+              <div class="card-meta"><span class="chip">Computer Vision</span></div>
+            </div>
+          </a>
+
+          <a class="card" href="projects.html#rag-chatbot" data-tilt data-reveal>
+            <div class="card-media">
+              <img src="img/medassist-1.jpg" alt="Healthcare RAG chatbot" loading="lazy" decoding="async" />
+              <span class="card-open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+            </div>
+            <div class="card-body">
+              <h3>AI Healthcare RAG Chatbot</h3>
+              <p>Retrieval-augmented generation over curated medical literature — Qdrant vector search with explicit citation formatting, so every answer traces back to a source.</p>
+              <div class="card-meta"><span class="chip">Applied AI</span></div>
+            </div>
+          </a>
+
+          <a class="card" href="projects.html#brainstorm" data-tilt data-reveal>
+            <div class="card-media">
+              <img src="img/webcite-2.jpg" alt="Web-Cite citation graph" loading="lazy" decoding="async" />
+              <span class="card-open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></span>
+            </div>
+            <div class="card-body">
+              <h3>Web-Cite — AI Assisted Research</h3>
+              <p>Pick a root paper and get an editable citation web built from embedding similarity — automated literature discovery that hands layout control back to the researcher.</p>
+              <div class="card-meta"><span class="chip">Full Stack</span></div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SKILLS ===== -->
+    <section class="section section--alt" id="skills">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow" data-reveal="fade">Toolkit</span>
+          <h2 class="h-lg" data-reveal>Technical &amp; research competencies</h2>
+        </div>
+
+        <div class="skills-grid" data-stagger>
+          <div class="skill-card" data-reveal>
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>
+              Languages
+            </h3>
             <ul>
-              <li>Python</li>
-              <li>JavaScript / TypeScript</li>
-              <li>Java</li>
-              <li>C#</li>
-              <li>SQL</li>
-              <li>HTML / CSS</li>
+              <li>Python</li><li>Java</li><li>C++</li>
+              <li>JavaScript</li><li>TypeScript</li><li>SQL</li>
             </ul>
           </div>
-          <div class="skill-category">
-            <h3>AI / ML</h3>
+
+          <div class="skill-card" data-reveal>
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="m7 7 3 3M17 7l-3 3M7 17l3-3M17 17l-3-3"/></svg>
+              AI
+            </h3>
             <ul>
-              <li>PyTorch</li>
-              <li>Hugging Face Transformers</li>
-              <li>LangChain</li>
-              <li>RAG Pipelines</li>
-              <li>Prompt Engineering</li>
-              <li>Fine-Tuning</li>
-              <li>Vector Databases</li>
-              <li>Computer Vision</li>
+              <li>MCP</li><li>RAG</li><li>LangChain</li><li>LangGraph</li><li>LangSmith</li>
+              <li>Qdrant</li><li>ChromaDB</li><li>vLLM</li>
+              <li>Sentence-Transformers</li><li>Embedding Pipelines</li>
             </ul>
           </div>
-          <div class="skill-category">
-            <h3>Frameworks &amp; Infrastructure</h3>
+
+          <div class="skill-card" data-reveal>
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg>
+              ML
+            </h3>
             <ul>
-              <li>React</li>
-              <li>Flask / FastAPI</li>
-              <li>Unity</li>
-              <li>Git</li>
-              <li>Docker</li>
-              <li>Linux / CLI</li>
-              <li>REST APIs</li>
+              <li>PyTorch</li><li>TensorFlow</li><li>Scikit-Learn</li>
+              <li>NumPy / Pandas</li><li>Signal Processing</li>
+              <li>Experimental Design</li><li>Statistical Analysis</li>
             </ul>
           </div>
-          <div class="skill-category">
-            <h3>Data &amp; Research</h3>
+
+          <div class="skill-card" data-reveal>
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+              Infrastructure &amp; Dev
+            </h3>
             <ul>
-              <li>NumPy / Pandas</li>
-              <li>DeepLabCut</li>
-              <li>EEG / Biosignal Processing</li>
-              <li>Data Pipelines</li>
-              <li>Experiment Design</li>
-              <li>Scientific Writing</li>
+              <li>Docker</li><li>Kubernetes</li><li>CI/CD (GitHub Actions)</li>
+              <li>AWS / GCP</li><li>RESTful APIs</li><li>PostgreSQL</li><li>Git / GitHub</li>
             </ul>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Footer -->
+    <!-- ===== CTA ===== -->
+    <section class="section section--tight">
+      <div class="container">
+        <div class="cta" data-reveal="scale">
+          <div class="aurora" aria-hidden="true"><span class="b1"></span><span class="b2"></span></div>
+          <span class="eyebrow" style="justify-content:center">Let's talk</span>
+          <h2 class="h-lg">Building something at the edge of <span class="grad">brains and machines</span>?</h2>
+          <p>I'm always open to research collaborations, internships, and interesting problems.</p>
+          <div class="hero-actions">
+            <a href="contact.html" class="btn btn--primary" data-magnetic>
+              Get in touch
+              <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <button class="btn btn--ghost" data-copy="noemiamahmud@gmail.com" data-magnetic>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy email
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
   <footer class="footer">
     <div class="container">
-      <p>&copy; 2026 Noemia L. Mahmud</p>
-      <div class="footer-links">
-        <a href="mailto:noemiamahmud@gmail.com">Email</a>
-        <a href="https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        <a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-logo"><span class="mark">NM</span><span>Noemia L. Mahmud</span></a>
+          <p>Neuroscience × AI · University of Illinois Urbana-Champaign</p>
+        </div>
+        <div class="footer-cols">
+          <div class="footer-col">
+            <h4>Pages</h4>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="projects.html">Projects</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Elsewhere</h4>
+            <ul>
+              <li><a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+              <li><a href="https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+              <li><a href="mailto:noemiamahmud@gmail.com">Email</a></li>
+              <li><a href="https://drive.google.com/file/d/1a5KK6eg_4d5hkI7UKKVegxdsf7iyWWrS/view?usp=sharing" target="_blank" rel="noopener noreferrer">Résumé</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Noemia L. Mahmud — built from scratch, no frameworks</span>
+        <button class="to-top">
+          Back to top
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </button>
       </div>
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <!-- ===== COMMAND PALETTE ===== -->
+  <div class="cmdk" id="cmdk" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Command menu">
+    <div class="cmdk-panel">
+      <div class="cmdk-input">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" placeholder="Search projects, pages, actions…" aria-label="Search" />
+      </div>
+      <div class="cmdk-list" role="listbox"></div>
+      <div class="cmdk-foot">
+        <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+        <span><kbd>↵</kbd> select</span>
+        <span><kbd>esc</kbd> close</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js" defer></script>
 </body>
 </html>

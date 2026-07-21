@@ -1,137 +1,730 @@
-/* ===== Neural Network Banner Animation =====
-   Draws floating nodes connected by lines on a dark background,
-   giving a futuristic brain-computer network aesthetic.
-   Present on every page via the .neural-banner canvas. */
-(function initNeuralBanner() {
-  const canvas = document.getElementById('neural-canvas');
-  if (!canvas) return;
+/* =============================================================
+   Noemia L. Mahmud — Portfolio
+   Vanilla JS. No dependencies, no build step.
 
-  const ctx = canvas.getContext('2d');
-  let width, height, nodes, animId;
-  const NODE_COUNT = 80;
-  const CONNECT_DIST = 130;
+   Modules, in order:
+     1.  utils            7.  timeline progress
+     2.  theme            8.  tilt + spotlight
+     3.  neural canvas    9.  magnetic buttons
+     4.  cursor          10.  text scramble
+     5.  nav             11.  project data / filters
+     6.  reveal          12.  modal (+ deep links)
+                         13.  command palette
+                         14.  copy / toast / form
+   ============================================================= */
 
-  function resize() {
-    const rect = canvas.parentElement.getBoundingClientRect();
-    width = canvas.width = rect.width * devicePixelRatio;
-    height = canvas.height = rect.height * devicePixelRatio;
-    canvas.style.width = rect.width + 'px';
-    canvas.style.height = rect.height + 'px';
-    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
-  }
+/* ===== 1. UTILS ===== */
+const $  = (s, c = document) => c.querySelector(s);
+const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouch = window.matchMedia('(hover: none)').matches;
+const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
 
-  function createNodes() {
-    const w = width / devicePixelRatio;
-    const h = height / devicePixelRatio;
-    nodes = Array.from({ length: NODE_COUNT }, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      r: Math.random() * 2 + 1,
-      // Nodes pulse slightly — each has its own phase
-      phase: Math.random() * Math.PI * 2
-    }));
-  }
+function raf(fn) {
+  let ticking = false;
+  return (...args) => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { fn(...args); ticking = false; });
+  };
+}
 
-  function draw(time) {
-    const w = width / devicePixelRatio;
-    const h = height / devicePixelRatio;
-    ctx.clearRect(0, 0, w, h);
+/* ===== 2. THEME =====
+   The initial theme is applied by an inline script in <head> to avoid a
+   flash of the wrong palette; this only handles the toggle afterwards. */
+(function theme() {
+  const btn = $('#theme-toggle');
+  if (!btn) return;
 
-    // Update positions
-    for (const n of nodes) {
-      n.x += n.vx;
-      n.y += n.vy;
-      if (n.x < 0 || n.x > w) n.vx *= -1;
-      if (n.y < 0 || n.y > h) n.vy *= -1;
-    }
-
-    // Draw connections
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const dx = nodes[i].x - nodes[j].x;
-        const dy = nodes[i].y - nodes[j].y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < CONNECT_DIST) {
-          const alpha = (1 - dist / CONNECT_DIST) * 0.35;
-          ctx.strokeStyle = `rgba(120, 130, 255, ${alpha})`;
-          ctx.lineWidth = 0.6;
-          ctx.beginPath();
-          ctx.moveTo(nodes[i].x, nodes[i].y);
-          ctx.lineTo(nodes[j].x, nodes[j].y);
-          ctx.stroke();
-        }
-      }
-    }
-
-    // Draw nodes with pulsing glow
-    const t = time * 0.001;
-    for (const n of nodes) {
-      const pulse = 0.6 + 0.4 * Math.sin(t * 1.5 + n.phase);
-      const r = n.r * (0.8 + pulse * 0.4);
-
-      // Glow
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, r + 3, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(100, 120, 255, ${pulse * 0.15})`;
-      ctx.fill();
-
-      // Core
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(160, 170, 255, ${0.5 + pulse * 0.5})`;
-      ctx.fill();
-    }
-
-    animId = requestAnimationFrame(draw);
-  }
-
-  resize();
-  createNodes();
-  animId = requestAnimationFrame(draw);
-
-  // Debounced resize
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-      resize();
-      createNodes();
-    }, 150);
+  btn.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch (e) { /* private mode */ }
+    btn.setAttribute('aria-label', `Switch to ${next === 'light' ? 'dark' : 'light'} theme`);
+    window.dispatchEvent(new CustomEvent('themechange', { detail: next }));
   });
 })();
 
-/* ===== Navbar scroll shadow ===== */
-const navbar = document.querySelector('.navbar');
-window.addEventListener('scroll', () => {
-  navbar.classList.toggle('scrolled', window.scrollY > 10);
-});
+/* ===== 3. NEURAL CANVAS =====
+   Particle field behind the hero: nodes drift, connect when close, repel
+   from the cursor, and periodically fire a "signal" along an edge. */
+(function neural() {
+  const canvas = $('#neural-canvas');
+  if (!canvas) return;
 
-/* ===== Mobile nav toggle ===== */
-const navToggle = document.querySelector('.nav-toggle');
-const navLinks = document.querySelector('.nav-links');
-if (navToggle) {
-  navToggle.addEventListener('click', () => {
-    navLinks.classList.toggle('open');
-  });
-  navLinks.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => navLinks.classList.remove('open'));
-  });
-}
+  const ctx = canvas.getContext('2d', { alpha: true });
+  const host = canvas.parentElement;
+  let w = 0, h = 0, dpr = 1;
+  let nodes = [], signals = [], rafId = null, running = false;
+  const mouse = { x: -9999, y: -9999, active: false };
+  const LINK = 150;
+  const REPEL = 130;
 
-/* ===== Project data — rich HTML content per project =====
-   Each project returns its full modal body HTML via a content() function,
-   so every modal can have unique layout, multiple images, and storytelling sections. */
+  let hues = { node: '160,170,255', link: '120,130,255' };
+  function readTheme() {
+    const light = document.documentElement.dataset.theme === 'light';
+    hues = light
+      ? { node: '90,60,220', link: '110,80,230' }
+      : { node: '160,170,255', link: '120,130,255' };
+  }
+
+  function resize() {
+    const r = host.getBoundingClientRect();
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = r.width; h = r.height;
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function seed() {
+    const count = clamp(Math.round((w * h) / 13000), 40, 130);
+    nodes = Array.from({ length: count }, () => {
+      const z = Math.random() * 0.75 + 0.25;          // depth: 0.25 (far) → 1 (near)
+      return {
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.26 * z,
+        vy: (Math.random() - 0.5) * 0.26 * z,
+        z,
+        r: (Math.random() * 1.4 + 0.7) * z,
+        phase: Math.random() * Math.PI * 2
+      };
+    });
+    signals = [];
+  }
+
+  function fire() {
+    if (nodes.length < 2 || signals.length > 5) return;
+    const a = nodes[(Math.random() * nodes.length) | 0];
+    const near = nodes.filter(n => n !== a && Math.hypot(n.x - a.x, n.y - a.y) < LINK);
+    if (!near.length) return;
+    const b = near[(Math.random() * near.length) | 0];
+    signals.push({ a, b, t: 0, speed: 0.014 + Math.random() * 0.016 });
+  }
+
+  function frame(time) {
+    ctx.clearRect(0, 0, w, h);
+    const t = time * 0.001;
+
+    for (const n of nodes) {
+      n.x += n.vx;
+      n.y += n.vy;
+
+      // Cursor repulsion — nearer nodes react more strongly.
+      if (mouse.active) {
+        const dx = n.x - mouse.x, dy = n.y - mouse.y;
+        const d = Math.hypot(dx, dy);
+        if (d < REPEL && d > 0.01) {
+          const f = ((REPEL - d) / REPEL) * 0.9 * n.z;
+          n.x += (dx / d) * f;
+          n.y += (dy / d) * f;
+        }
+      }
+
+      // Wrap softly at the edges.
+      if (n.x < -20) n.x = w + 20; else if (n.x > w + 20) n.x = -20;
+      if (n.y < -20) n.y = h + 20; else if (n.y > h + 20) n.y = -20;
+    }
+
+    // Links
+    ctx.lineWidth = 0.7;
+    for (let i = 0; i < nodes.length; i++) {
+      const a = nodes[i];
+      for (let j = i + 1; j < nodes.length; j++) {
+        const b = nodes[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 > LINK * LINK) continue;
+        const d = Math.sqrt(d2);
+        let alpha = (1 - d / LINK) * 0.3 * ((a.z + b.z) / 2);
+        // Brighten links near the cursor.
+        if (mouse.active) {
+          const md = Math.hypot((a.x + b.x) / 2 - mouse.x, (a.y + b.y) / 2 - mouse.y);
+          if (md < 200) alpha += (1 - md / 200) * 0.35;
+        }
+        ctx.strokeStyle = `rgba(${hues.link},${alpha})`;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+    }
+
+    // Signals travelling along edges
+    for (let i = signals.length - 1; i >= 0; i--) {
+      const s = signals[i];
+      s.t += s.speed;
+      if (s.t >= 1) { signals.splice(i, 1); continue; }
+      const x = s.a.x + (s.b.x - s.a.x) * s.t;
+      const y = s.a.y + (s.b.y - s.a.y) * s.t;
+      const fade = Math.sin(s.t * Math.PI);
+      ctx.beginPath();
+      ctx.arc(x, y, 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(34,211,238,${fade})`;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(x, y, 7, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(34,211,238,${fade * 0.14})`;
+      ctx.fill();
+    }
+
+    // Nodes
+    for (const n of nodes) {
+      const pulse = 0.65 + 0.35 * Math.sin(t * 1.4 + n.phase);
+      const r = n.r * (0.85 + pulse * 0.3);
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r + 3 * n.z, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${hues.node},${pulse * 0.11 * n.z})`;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${hues.node},${(0.35 + pulse * 0.45) * n.z})`;
+      ctx.fill();
+    }
+
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function start() {
+    if (running || reduceMotion) return;
+    running = true;
+    rafId = requestAnimationFrame(frame);
+  }
+  function stop() {
+    running = false;
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+
+  readTheme();
+  resize();
+  seed();
+
+  if (reduceMotion) {
+    frame(0);            // one static frame
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  } else {
+    start();
+    setInterval(fire, 900);
+  }
+
+  window.addEventListener('themechange', () => { readTheme(); });
+
+  window.addEventListener('mousemove', e => {
+    const r = host.getBoundingClientRect();
+    mouse.x = e.clientX - r.left;
+    mouse.y = e.clientY - r.top;
+    mouse.active = mouse.y > -100 && mouse.y < h + 100;
+  }, { passive: true });
+  window.addEventListener('mouseout', () => { mouse.active = false; });
+
+  let rt;
+  window.addEventListener('resize', () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => { resize(); seed(); }, 180);
+  });
+
+  // Only animate while the hero is on screen and the tab is visible.
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop()), { threshold: 0 })
+      .observe(host);
+  }
+  document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+})();
+
+/* ===== 4. CURSOR ===== */
+(function cursor() {
+  if (isTouch || reduceMotion) return;
+  const dot = $('.cursor-dot');
+  const ring = $('.cursor-ring');
+  if (!dot || !ring) return;
+
+  document.body.classList.add('has-cursor');
+  let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+  let rx = mx, ry = my;
+
+  window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
+  window.addEventListener('mousedown', () => ring.classList.add('is-down'));
+  window.addEventListener('mouseup', () => ring.classList.remove('is-down'));
+  document.addEventListener('mouseleave', () => { dot.style.opacity = ring.style.opacity = '0'; });
+  document.addEventListener('mouseenter', () => { dot.style.opacity = ring.style.opacity = '1'; });
+
+  const INTERACTIVE = 'a, button, [role="button"], input, textarea, .card, .filter-btn, .contact-item';
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest(INTERACTIVE)) ring.classList.add('is-active');
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest(INTERACTIVE)) ring.classList.remove('is-active');
+  });
+
+  (function loop() {
+    rx += (mx - rx) * 0.16;
+    ry += (my - ry) * 0.16;
+    dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
+    ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+    requestAnimationFrame(loop);
+  })();
+})();
+
+/* ===== 5. NAV + SCROLL PROGRESS ===== */
+(function nav() {
+  const bar = $('.navbar');
+  const progress = $('.scroll-progress');
+  const toggle = $('.nav-toggle');
+  const links = $('.nav-links');
+
+  const onScroll = raf(() => {
+    const y = window.scrollY;
+    if (bar) bar.classList.toggle('scrolled', y > 12);
+    if (progress) {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.transform = `scaleX(${max > 0 ? clamp(y / max, 0, 1) : 0})`;
+    }
+  });
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  if (toggle && links) {
+    toggle.addEventListener('click', () => {
+      const open = links.classList.toggle('open');
+      toggle.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+    links.addEventListener('click', e => {
+      if (e.target.tagName === 'A') {
+        links.classList.remove('open');
+        toggle.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  const top = $('.to-top');
+  if (top) top.addEventListener('click', () => window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }));
+})();
+
+/* ===== 6. REVEAL ON SCROLL ===== */
+(function reveal() {
+  const els = $$('[data-reveal]');
+  if (!els.length) return;
+  if (!('IntersectionObserver' in window) || reduceMotion) {
+    els.forEach(el => el.classList.add('is-visible'));
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-visible');
+      io.unobserve(entry.target);
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+
+  els.forEach(el => {
+    // Stagger siblings that share a [data-stagger] parent.
+    const parent = el.closest('[data-stagger]');
+    if (parent) {
+      const i = [...parent.querySelectorAll('[data-reveal]')].indexOf(el);
+      el.style.setProperty('--d', `${Math.min(i, 8) * 70}ms`);
+    }
+    io.observe(el);
+  });
+})();
+
+/* ===== 8. TIMELINE PROGRESS ===== */
+(function timeline() {
+  const rail = $('.timeline-rail');
+  const items = $$('.tl-item');
+  if (!rail || !items.length) return;
+
+  const wrap = rail.parentElement;
+  const onScroll = raf(() => {
+    const r = wrap.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const p = clamp((vh * 0.65 - r.top) / r.height, 0, 1);
+    rail.style.setProperty('--p', p.toFixed(4));
+  });
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
+
+  if ('IntersectionObserver' in window && !reduceMotion) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => e.target.classList.toggle('is-visible', e.isIntersecting));
+    }, { rootMargin: '-30% 0px -30% 0px' });
+    items.forEach(i => io.observe(i));
+  } else {
+    items.forEach(i => i.classList.add('is-visible'));
+  }
+})();
+
+/* ===== 9. TILT + SPOTLIGHT ===== */
+(function tilt() {
+  const spot = $$('.card, .skill-card, .tl-card');
+  spot.forEach(el => {
+    el.addEventListener('pointermove', e => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      el.style.setProperty('--my', `${e.clientY - r.top}px`);
+    });
+  });
+
+  if (isTouch || reduceMotion) return;
+
+  $$('[data-tilt]').forEach(el => {
+    const MAX = 5;
+    let rafId = null;
+    el.addEventListener('pointermove', e => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        const r = el.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        el.style.transform =
+          `perspective(900px) rotateX(${(-py * MAX).toFixed(2)}deg) rotateY(${(px * MAX).toFixed(2)}deg) translateY(-4px)`;
+        rafId = null;
+      });
+    });
+    el.addEventListener('pointerleave', () => { el.style.transform = ''; });
+  });
+})();
+
+/* ===== 10. MAGNETIC BUTTONS ===== */
+(function magnetic() {
+  if (isTouch || reduceMotion) return;
+  $$('[data-magnetic]').forEach(el => {
+    const STRENGTH = 0.28;
+    el.addEventListener('pointermove', e => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width / 2) * STRENGTH;
+      const y = (e.clientY - r.top - r.height / 2) * STRENGTH;
+      el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+    });
+    el.addEventListener('pointerleave', () => { el.style.transform = ''; });
+  });
+})();
+
+/* ===== 11. TEXT SCRAMBLE (hero role line) ===== */
+(function scramble() {
+  const el = $('[data-scramble]');
+  if (!el) return;
+  const phrases = JSON.parse(el.dataset.scramble);
+  const CHARS = '!<>-_\\/[]{}—=+*^?#01';
+
+  if (reduceMotion) { el.textContent = phrases[0]; return; }
+
+  let frame = 0, queue = [], rafId, idx = 0;
+
+  function setText(next) {
+    const current = el.textContent;
+    const len = Math.max(current.length, next.length);
+    queue = [];
+    for (let i = 0; i < len; i++) {
+      const from = current[i] || '';
+      const to = next[i] || '';
+      const start = Math.floor(Math.random() * 24);
+      const end = start + Math.floor(Math.random() * 24) + 8;
+      queue.push({ from, to, start, end, char: '' });
+    }
+    cancelAnimationFrame(rafId);
+    frame = 0;
+    return new Promise(resolve => update(resolve));
+  }
+
+  function update(resolve) {
+    let out = '', done = 0;
+    for (const q of queue) {
+      if (frame >= q.end) { done++; out += q.to; }
+      else if (frame >= q.start) {
+        if (!q.char || Math.random() < 0.28) q.char = CHARS[(Math.random() * CHARS.length) | 0];
+        out += `<span style="opacity:.55">${q.char}</span>`;
+      } else out += q.from;
+    }
+    el.innerHTML = out;
+    if (done === queue.length) resolve();
+    else { frame++; rafId = requestAnimationFrame(() => update(resolve)); }
+  }
+
+  (async function cycle() {
+    // Small delay so the hero entrance animation lands first.
+    await new Promise(r => setTimeout(r, 700));
+    while (true) {
+      await setText(phrases[idx]);
+      idx = (idx + 1) % phrases.length;
+      await new Promise(r => setTimeout(r, 2600));
+    }
+  })();
+})();
+
+/* ===== 11b. GITHUB ACTIVITY PANEL =====
+   Paints immediately from the snapshot inlined in index.html (works offline and
+   over file://), then refreshes the calendar in the background. Only the
+   calendar is fetched live — languages and repo counts change slowly and come
+   from the snapshot, which keeps this to a single small request. */
+(function githubPanel() {
+  const panel = $('#gh-panel');
+  if (!panel) return;
+
+  const raw = $('#gh-data');
+  const grid = $('.gh-grid', panel);
+  const months = $('.gh-months', panel);
+  const scroll = $('.gh-scroll', panel);
+  const tip = $('.gh-tip', panel);
+  const user = panel.dataset.user || 'noemiamahmud';
+
+  const CACHE_KEY = 'gh-cal-v1';
+  const TTL = 6 * 60 * 60 * 1000;               // 6 hours
+  const DAY = 86400000;
+
+  let snap = null;
+  try { snap = JSON.parse(raw.textContent); } catch (e) { /* malformed */ }
+  if (!snap || !snap.calendar || !Array.isArray(snap.calendar.counts)) {
+    panel.hidden = true;                         // never show an empty shell
+    return;
+  }
+
+  /* --- derive headline numbers from the raw day counts --- */
+  function derive(counts) {
+    let total = 0, active = 0, best = 0, run = 0;
+    for (const c of counts) {
+      total += c;
+      if (c > 0) { active++; run++; if (run > best) best = run; }
+      else run = 0;
+    }
+    return { total, active, best };
+  }
+
+  /* GitHub's own bucketing: quartiles over the days that have activity, so a
+     quiet year still shows contrast instead of one flat colour. */
+  function levels(counts) {
+    const nz = counts.filter(c => c > 0).sort((a, b) => a - b);
+    if (!nz.length) return counts.map(() => 0);
+    const q = p => nz[Math.min(nz.length - 1, Math.floor(nz.length * p))];
+    const t1 = q(0.25), t2 = q(0.5), t3 = q(0.75);
+    return counts.map(c => {
+      if (c <= 0) return 0;
+      if (c <= t1) return 1;
+      if (c <= t2) return 2;
+      if (c <= t3) return 3;
+      return 4;
+    });
+  }
+
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC'
+  });
+  const MONTH = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  function render(cal) {
+    const counts = cal.counts;
+    const start = new Date(cal.start + 'T00:00:00Z');
+    const lv = levels(counts);
+    const stats = derive(counts);
+
+    const set = (k, v) => {
+      const el = panel.querySelector(`[data-gh="${k}"]`);
+      if (el) el.textContent = v;
+    };
+    set('total', stats.total.toLocaleString());
+    set('active', stats.active);
+    set('streak', stats.best);
+    set('repos', snap.publicRepos != null ? snap.publicRepos : '—');
+
+    // Pad the first column so each grid row is a fixed weekday.
+    const lead = start.getUTCDay();
+    const cells = [];
+    for (let i = 0; i < lead; i++) cells.push(null);
+    for (let i = 0; i < counts.length; i++) cells.push(i);
+
+    grid.textContent = '';
+    months.textContent = '';
+    const frag = document.createDocumentFragment();
+    const mfrag = document.createDocumentFragment();
+    let lastMonth = -1;
+    let lastLabelCol = -99;
+
+    for (let i = 0; i < cells.length; i++) {
+      const idx = cells[i];
+      const col = Math.floor(i / 7);
+      const d = document.createElement('div');
+      d.className = 'gh-cell';
+      d.style.setProperty('--col', col);
+
+      if (idx === null) {
+        d.classList.add('pad');
+      } else {
+        const date = new Date(start.getTime() + idx * DAY);
+        const c = counts[idx];
+        d.dataset.l = lv[idx];
+        d.dataset.c = c;
+        d.dataset.d = fmt.format(date);
+
+        // One label per column, at the row-0 cell that opens a new month.
+        if (i % 7 === 0) {
+          const m = date.getUTCMonth();
+          // Only label a month if it has room — otherwise "JulAug" collides.
+          if (m !== lastMonth && col - lastLabelCol >= 3) {
+            lastMonth = m;
+            lastLabelCol = col;
+            mfrag.appendChild(monthLabel(MONTH[m]));
+          } else {
+            if (m !== lastMonth) lastMonth = m;
+            mfrag.appendChild(monthLabel(''));
+          }
+        }
+      }
+      frag.appendChild(d);
+    }
+    // Columns that began with a padding cell still need a month slot.
+    const cols = Math.ceil(cells.length / 7);
+    while (mfrag.childNodes.length < cols) mfrag.appendChild(monthLabel(''));
+
+    grid.appendChild(frag);
+    months.appendChild(mfrag);
+    grid.setAttribute('aria-label',
+      `${stats.total} GitHub contributions in the past year across ${stats.active} active days`);
+
+    if (!reduceMotion) {
+      requestAnimationFrame(() => panel.classList.add('is-drawn'));
+    }
+    // Open on the most recent weeks when the year doesn't fit.
+    requestAnimationFrame(() => { scroll.scrollLeft = scroll.scrollWidth; });
+  }
+
+  function monthLabel(text) {
+    const s = document.createElement('span');
+    s.textContent = text;
+    return s;
+  }
+
+  /* --- language bar --- */
+  function renderLangs(langs) {
+    if (!Array.isArray(langs) || !langs.length) return;
+    const track = $('.gh-bar-track', panel);
+    const keys = $('.gh-lang-keys', panel);
+    const palette = ['#7c5cff', '#22d3ee', '#ff77b9', '#fbbf24', '#34d399', '#94a3b8'];
+    const total = langs.reduce((a, l) => a + l[1], 0);
+
+    track.textContent = '';
+    keys.textContent = '';
+    langs.slice(0, 6).forEach(([name, n], i) => {
+      const pct = Math.round((n / total) * 100);
+      const bar = document.createElement('i');
+      bar.style.cssText = `flex: ${n} 0 0; background: ${palette[i % palette.length]};`;
+      bar.title = `${name} — ${pct}%`;
+      track.appendChild(bar);
+
+      const key = document.createElement('span');
+      const dot = document.createElement('i');
+      dot.style.background = palette[i % palette.length];
+      key.appendChild(dot);
+      key.appendChild(document.createTextNode(`${name} ${pct}%`));
+      keys.appendChild(key);
+    });
+  }
+
+  /* --- tooltip --- */
+  grid.addEventListener('pointerover', e => {
+    const cell = e.target.closest('.gh-cell');
+    if (!cell || cell.classList.contains('pad')) return;
+    const n = +cell.dataset.c;
+    tip.textContent = `${n === 0 ? 'No' : n} contribution${n === 1 ? '' : 's'} · ${cell.dataset.d}`;
+    const cr = cell.getBoundingClientRect();
+    const pr = panel.getBoundingClientRect();
+    tip.style.left = `${cr.left - pr.left + cr.width / 2}px`;
+    tip.style.top = `${Math.max(4, cr.top - pr.top - 34)}px`;
+    tip.classList.add('show');
+  });
+  grid.addEventListener('pointerleave', () => tip.classList.remove('show'));
+
+  /* --- cursor spotlight, same as the cards --- */
+  panel.addEventListener('pointermove', e => {
+    const r = panel.getBoundingClientRect();
+    panel.style.setProperty('--mx', `${e.clientX - r.left}px`);
+    panel.style.setProperty('--my', `${e.clientY - r.top}px`);
+  });
+
+  /* --- paint snapshot, then try for something fresher --- */
+  render(snap.calendar);
+  renderLangs(snap.languages);
+
+  function markLive(when) {
+    panel.classList.add('is-live');
+    const t = $('.gh-live-text', panel);
+    if (!t) return;
+    const mins = Math.round((Date.now() - when) / 60000);
+    t.textContent = mins < 2 ? 'live' : mins < 60 ? `${mins}m ago` : 'live';
+  }
+
+  async function refresh() {
+    // Serve a recent cache rather than hitting the network on every page view.
+    try {
+      const hit = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      if (hit && Date.now() - hit.at < TTL && hit.cal) {
+        render(hit.cal);
+        markLive(hit.at);
+        return;
+      }
+    } catch (e) { /* ignore unreadable cache */ }
+
+    try {
+      const ctrl = new AbortController();
+      const timeout = setTimeout(() => ctrl.abort(), 6000);
+      const res = await fetch(
+        `https://github-contributions-api.jogruber.de/v4/${encodeURIComponent(user)}?y=last`,
+        { signal: ctrl.signal }
+      );
+      clearTimeout(timeout);
+      if (!res.ok) throw new Error(res.status);
+
+      const data = await res.json();
+      const days = data.contributions;
+      if (!Array.isArray(days) || !days.length) throw new Error('empty');
+
+      const cal = { start: days[0].date, counts: days.map(d => d.count) };
+      render(cal);
+      markLive(Date.now());
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), cal })); } catch (e) {}
+    } catch (e) {
+      // Offline, blocked, or the service is down — the snapshot is already on
+      // screen and stays there. Nothing to tell the visitor.
+    }
+  }
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      io.disconnect();
+      refresh();
+    }, { rootMargin: '200px' });
+    io.observe(panel);
+  } else {
+    refresh();
+  }
+})();
+
+/* ===== 12. PROJECT DATA =====
+   Each project's modal body is produced by content(). Adding a project means
+   adding an entry here plus a matching card in projects.html. */
 
 function techList(items) {
   return `<div class="modal-tech-list">${items.map(t => `<span>${t}</span>`).join('')}</div>`;
 }
 function linksList(items) {
   if (!items.length) return '';
+  const icon = {
+    github: '<svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.23c-3.34.73-4.04-1.42-4.04-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.96 0-1.32.47-2.39 1.24-3.23-.12-.31-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.23 0 4.63-2.81 5.65-5.49 5.95.43.37.82 1.1.82 2.22v3.29c0 .32.21.7.83.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"/></svg>',
+    link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>'
+  };
   return `<div class="modal-links">${items.map(l =>
-    `<a href="${l.url}" target="_blank" rel="noopener noreferrer">${l.label}</a>`
+    `<a href="${l.url}" target="_blank" rel="noopener noreferrer">${/github/i.test(l.url) ? icon.github : icon.link}${l.label}</a>`
   ).join('')}</div>`;
+}
+function img(src, alt = '') {
+  return `<img src="${src}" alt="${alt}" loading="lazy" decoding="async" />`;
 }
 
 const projectData = {
@@ -147,40 +740,35 @@ const projectData = {
       <div class="modal-project-list">
         <div class="modal-project-item">
           <div class="modal-project-info">
-            <h3>RAG Tutor - Study any topic! </h3>
-            <a href="https://github.com/noemiamahmud/RAG_Tutor" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <h3>RAG Tutor — Study any topic!</h3>
+            <a href="https://github.com/noemiamahmud/RAG_Tutor" target="_blank" rel="noopener noreferrer">GitHub →</a>
           </div>
         </div>
         <div class="modal-project-item">
           <div class="modal-project-info">
-            <h3>LLM DJ BOT</h3>
-            <a href="https://github.com/noemiamahmud/LLM_DJ_BOT" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <h3>LLM DJ Bot</h3>
+            <a href="https://github.com/noemiamahmud/LLM_DJ_BOT" target="_blank" rel="noopener noreferrer">GitHub →</a>
           </div>
         </div>
-
         <div class="modal-project-item">
           <div class="modal-project-info">
-            <h3>Multi Agent Debater - Debate on Ethics of AI Art </h3>
-            <a href="https://github.com/noemiamahmud/The_ART_Debate" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <h3>Multi-Agent Debater — Debate on the Ethics of AI Art</h3>
+            <a href="https://github.com/noemiamahmud/The_ART_Debate" target="_blank" rel="noopener noreferrer">GitHub →</a>
           </div>
         </div>
-
         <div class="modal-project-item">
           <div class="modal-project-info">
             <h3>Text Operations Toolkit</h3>
-            <a href="https://github.com/noemiamahmud/Text_Operations_LLM" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://github.com/noemiamahmud/Text_Operations_LLM" target="_blank" rel="noopener noreferrer">GitHub →</a>
           </div>
         </div>
-
         <div class="modal-project-item">
           <div class="modal-project-info">
-            <h3>RecurrentAI - interactive pygame app </h3>
-            <a href="https://github.com/noemiamahmud/RecurrentAI/tree/main" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <h3>RecurrentAI — interactive pygame app</h3>
+            <a href="https://github.com/noemiamahmud/RecurrentAI/tree/main" target="_blank" rel="noopener noreferrer">GitHub →</a>
           </div>
         </div>
-
-        <h3>... and more being added from GitHub soon! </h3>
-
+        <p class="modal-note">// more being added from GitHub soon</p>
       </div>
     `
   },
@@ -189,7 +777,7 @@ const projectData = {
     title: 'AI Healthcare RAG Chatbot',
     tag: 'Machine Learning',
     content: () => `
-      <div class="modal-hero-img"><img src="medassist.png" alt="" /></div>
+      <div class="modal-hero-img">${img('img/medassist-1.jpg', 'MedAssist RAG chatbot interface')}</div>
 
       <div class="modal-section">
         <h3>The Problem</h3>
@@ -197,27 +785,26 @@ const projectData = {
       </div>
 
       <div class="modal-section">
-        <h3>Architecture & Pipeline</h3>
+        <h3>Architecture &amp; Pipeline</h3>
         <p>Designed a Retrieval-Augmented Generation pipeline that ingests curated healthcare documents, medical textbooks, and relevant research, chunks and embeds them into a vector database, retrieves the most relevant passages at query time, and feeds them as context to an LLM for grounded answer synthesis.</p>
-        <div class="modal-inline-img"><img src="medassist2.png" alt="" /></div>
+        <div class="modal-inline-img">${img('img/medassist-2.jpg', 'RAG pipeline architecture')}</div>
         <ul>
           <li>Document ingestion with chunking, overlap, and metadata tagging</li>
           <li>Embedding generation via sentence-transformers</li>
-          <li>Vector search with FAISS for sub-second retrieval</li>
+          <li>Vector search with Qdrant for sub-second retrieval</li>
           <li>LLM synthesis with explicit citation formatting</li>
         </ul>
       </div>
 
-
       <div class="modal-section">
         <h3>User Interface</h3>
         <p>I later developed a clean chat interface where each response includes inline citations with expandable source previews, so users can verify claims without leaving the conversation. Users could also upload their own medical documents to have them broken down and explained for clarity, particularly useful for large and complex diagnoses.</p>
-        <div class="modal-inline-img"><img src="medassist3.png" alt="" /></div>
+        <div class="modal-inline-img">${img('img/medassist-3.jpg', 'Chat interface with inline citations')}</div>
       </div>
 
       <div class="modal-section">
         <h3>Tech Stack</h3>
-        ${techList(['Python', 'LangChain', 'FAISS', 'sentence-transformers', 'OpenAI API', 'Flask', 'React'])}
+        ${techList(['Python', 'Qdrant', 'sentence-transformers', 'LangChain', 'RAG', 'Flask', 'React'])}
         ${linksList([{ label: 'GitHub', url: 'https://github.com/Agentic-AI-UIUC/fall-agentic-ai-healthcare-search' }])}
       </div>
     `
@@ -244,7 +831,7 @@ const projectData = {
       <div class="modal-section">
         <h3>DeepLabCut Integration</h3>
         <p>Rat Behavior Intelligence is a browser-based neuroscience tool that automates the analysis of rodent behavior from raw video - replacing hours of manual observation with a structured, interpretable pipeline. Users upload a rat video (or record directly from the browser), and the system processes it frame by frame, extracting temporal movement features like confinement, turning patterns, and motion bursts to classify behavioral states including exploration, freezing, grooming, locomotor bursts, stereotypy, and resting. When a local DeepLabCut environment is available, the pipeline upgrades to full pose estimation using a custom-trained ResNet-50 model tracking up to 16 anatomical keypoints - nose, ears, spine segments, paws, and tail - enabling geometry-derived classifications that go far beyond simple motion heuristics.</p>
-        <p>The architecture is deliberately staged for interpretability and extensibility. A FastAPI backend handles video ingestion, runs the classification pipeline, and writes annotated outputs; the frontend streams results back as a playable annotated MP4, a timeline.json with frame-level behavior bouts, timestamped event feeds, and a natural-language summary with review-priority flagging. The observer commentary layer is rule-based by default but upgrades transparently to an LLM (OpenAI or a local llama.cpp server) when configured - keeping the core pipeline functional in fully offline or resource-constrained environments.</p>
+        <p>The architecture is deliberately staged for interpretability and extensibility. A FastAPI backend handles video ingestion, runs the classification pipeline, and writes annotated outputs; the frontend streams results back as a playable annotated MP4, a <code>timeline.json</code> with frame-level behavior bouts, timestamped event feeds, and a natural-language summary with review-priority flagging. The observer commentary layer is rule-based by default but upgrades transparently to an LLM (OpenAI or a local llama.cpp server) when configured - keeping the core pipeline functional in fully offline or resource-constrained environments.</p>
         <p>What makes this project technically meaningful is its graceful degradation and forward-looking design. When DeepLabCut is unavailable, the system falls back to a motion-based temporal classifier without breaking the user experience. The expanded 16-point skeleton schema and retraining templates are already in place, so improving classification accuracy is a matter of more labeled data rather than architectural rework. The combination of pose estimation, temporal behavior classification, and LLM-augmented summarization positions this as a practical screening tool for neuroscience labs - reducing the manual review burden while keeping a human researcher in the loop on ambiguous or high-priority clips.</p>
       </div>
 
@@ -254,8 +841,8 @@ const projectData = {
       </div>
 
       <div class="modal-img-row">
-        <div class="modal-inline-img"><img src="Image 3-31-26 at 11.15 AM.png" alt="" /></div>
-        <div class="modal-inline-img"><img src="ratcode.png" alt="" /></div>
+        <div class="modal-inline-img">${img('img/rat-annotations.jpg', 'Pose annotation overlay')}</div>
+        <div class="modal-inline-img">${img('img/rat-code.jpg', 'Pipeline source code')}</div>
       </div>
 
       <div class="modal-section">
@@ -267,27 +854,27 @@ const projectData = {
   },
 
   'neurotech-vr': {
-    title: 'Engineering Open House',
+    title: 'NeuroTech, MindLift & Melodify',
     tag: 'Research',
     content: () => `
-      <div class="modal-hero-img"><img src="PNG image.png" alt="" /></div>
+      <div class="modal-hero-img">${img('img/mindlift.jpg', 'MindLift hand-tracking prototype')}</div>
 
       <div class="modal-section">
         <h3>NeuroHacks Project</h3>
-        <p>MindLift is a browser-based interaction prototype that uses real-time hand tracking to let players "lift" and navigate objects through increasingly complex mazes using only their hand gestures. Built with MediaPipe, the game tracks hand landmarks at low latency — pinching to grab, opening to release — while a live mirrored camera preview with rendered landmarks stays visible in the corner throughout play. An attention monitoring layer watches for prolonged downward gaze and flashes a visual warning after three seconds, keeping the experience grounded in focus and presence. Levels scale in maze density and introduce hazard zones that reset progress, rewarding sustained coordination over raw speed.
-        Beyond the game itself, the project doubles as a modular data pipeline. Interaction metrics stream through a WebSocket-to-OSC relay to TouchDesigner and VCV Rack, enabling live audiovisual responses to player behavior — opening the door for performance art, research instrumentation, or generative sound design tied directly to hand and attention data. The architecture is deliberately layered, separating tracking, gesture logic, rendering, and bridge transport into distinct modules so each layer can be extended or swapped independently. The project sits at the intersection of attention-supportive interaction design, hand-eye coordination gameplay, and neurointeractive experience prototyping.</p>
+        <p>MindLift is a browser-based interaction prototype that uses real-time hand tracking to let players "lift" and navigate objects through increasingly complex mazes using only their hand gestures. Built with MediaPipe, the game tracks hand landmarks at low latency — pinching to grab, opening to release — while a live mirrored camera preview with rendered landmarks stays visible in the corner throughout play. An attention monitoring layer watches for prolonged downward gaze and flashes a visual warning after three seconds, keeping the experience grounded in focus and presence. Levels scale in maze density and introduce hazard zones that reset progress, rewarding sustained coordination over raw speed.</p>
+        <p>Beyond the game itself, the project doubles as a modular data pipeline. Interaction metrics stream through a WebSocket-to-OSC relay to TouchDesigner and VCV Rack, enabling live audiovisual responses to player behavior — opening the door for performance art, research instrumentation, or generative sound design tied directly to hand and attention data. The architecture is deliberately layered, separating tracking, gesture logic, rendering, and bridge transport into distinct modules so each layer can be extended or swapped independently. The project sits at the intersection of attention-supportive interaction design, hand-eye coordination gameplay, and neurointeractive experience prototyping.</p>
       </div>
 
-      <hr style="border: none; border-top: 1px solid var(--color-border); margin: 32px 0;" />
+      <hr class="modal-rule" />
 
       <div class="modal-section">
-        <h3>NeuroTech R&D — VR Biofeedback System</h3>
+        <h3>NeuroTech R&amp;D — VR Biofeedback System</h3>
         <p>At NeuroTech @ UIUC, we set out to build VR experiences that respond to your brain and body in real time — not scripted interactions, but adaptive environments driven by live physiological data. The question was: can we make neurofeedback feel like a game instead of a clinical tool?</p>
       </div>
 
       <div class="modal-section">
-        <h3>Signal Acquisition & BCI Approach</h3>
-        <p>While my startup's project details are confidential, a related project of mine is based on the same idea — Neurohack Fall 2025 "Mindlift." This project demonstrates a non-invasive approach to brain–computer interaction using natural micro-behavioral signals tightly coupled with cognitive intent. Instead of relying on EEG or invasive neural hardware, we use high-resolution eye movements, subtle facial muscle activations, and head gestures as a proxy for the user's internal decision-making.</p>
+        <h3>Signal Acquisition &amp; BCI Approach</h3>
+        <p>While my startup's project details are confidential, a related project of mine is based on the same idea — Neurohack Fall 2025 "MindLift." This project demonstrates a non-invasive approach to brain–computer interaction using natural micro-behavioral signals tightly coupled with cognitive intent. Instead of relying on EEG or invasive neural hardware, we use high-resolution eye movements, subtle facial muscle activations, and head gestures as a proxy for the user's internal decision-making.</p>
         <p>By turning gaze and micro-expressions into a telekinetic control system, we illustrate how future BCIs can merge computer vision, human cognition, and natural behavior to create interfaces that feel effortless and intuitive — technology responding to what you intend, not what you physically do.</p>
       </div>
 
@@ -297,26 +884,26 @@ const projectData = {
       </div>
 
       <div class="modal-section">
-        <h3>NeuroTech Tech Stack</h3>
-        ${techList(['Unity', 'C#', 'Python', 'EEG', 'Heart Rate Sensors', 'VR', 'Biosignal Processing', 'Game AI'])}
-        ${linksList([{ label: 'NeuroTech Website', url: 'https://neurotechatuiuc.com' }])}
-        ${linksList([{ label: 'GitHub', url: 'https://github.com/noemiamahmud/Maze-Game' }])}
+        <h3>Tech Stack</h3>
+        ${techList(['Unity', 'C#', 'Python', 'MediaPipe', 'EEG', 'Heart Rate Sensors', 'VR', 'Biosignal Processing', 'Game AI'])}
+        ${linksList([
+          { label: 'NeuroTech Website', url: 'https://neurotechatuiuc.com' },
+          { label: 'GitHub', url: 'https://github.com/noemiamahmud/Maze-Game' }
+        ])}
       </div>
 
-      <hr style="border: none; border-top: 1px solid var(--color-border); margin: 32px 0;" />
+      <hr class="modal-rule" />
 
       <div class="modal-section">
         <h3>Melodify — AI Music Generator</h3>
         <p>Melodify was one of my first hackathon projects in college — built at Dev-Ada 2024. The idea: describe a mood or scene in plain language and get original audio back. A user types a prompt like "upbeat jazz for a coffee shop morning" and the app returns a generated music clip, powered by Meta's AudioCraft MusicGen model running locally on the backend.</p>
-        <div class="modal-inline-img"><img src="Screenshot 2025-09-08 at 7.41.38 PM.png" alt="" /></div>
+        <div class="modal-inline-img">${img('img/melodify-1.jpg', 'Melodify interface')}</div>
       </div>
 
       <div class="modal-section">
         <h3>How It Works</h3>
         <p>The backend is a Flask application structured around the standard app factory pattern. A standalone MusicGen script wraps AudioCraft's generation pipeline, takes a text prompt as input, and writes the output to a generated audio folder that the Flask app then serves back to the user.</p>
-        <div class="modal-img-row">
-        <div class="modal-inline-img"><img src="Screenshot 2025-09-08 at 7.42.12 PM.png" alt="" /></div>
-      </div>
+        <div class="modal-inline-img">${img('img/melodify-2.jpg', 'Melodify backend structure')}</div>
       </div>
 
       <div class="modal-section">
@@ -336,7 +923,7 @@ const projectData = {
     title: 'Web-Cite — Assisted Research Tool',
     tag: 'Full Stack',
     content: () => `
-      <div class="modal-hero-img"><img src="webcite1.png" alt="" /></div>
+      <div class="modal-hero-img">${img('img/webcite-1.jpg', 'Web-Cite citation graph')}</div>
 
       <div class="modal-section">
         <h3>The Problem</h3>
@@ -346,23 +933,23 @@ const projectData = {
       <div class="modal-section">
         <h3>How It Works</h3>
         <p>Web-Cite is a full-stack research tool built to solve a real friction point in academic work — the fragmented, time-consuming process of finding and organizing related literature. Rather than requiring users to manually chain together searches across databases, Web-Cite automates the discovery of semantically related papers and renders them as an interactive, editable citation web. A user searches PubMed, selects a root article, and the backend takes over: it fetches the article's metadata, computes a local embedding vector from the title, abstract, keywords, and MeSH terms, then searches PubMed for candidate papers, scores each by cosine similarity, and surfaces the top three to four most relevant results as a structured graph — all without any manual input beyond the initial selection.</p>
-        <div class="modal-inline-img"><img src="webcite3.png" alt="" /></div>
+        <div class="modal-inline-img">${img('img/webcite-3.jpg', 'Semantic search results')}</div>
       </div>
 
       <div class="modal-section">
         <h3>Full Stack Architecture</h3>
-        <p>The backend is built with a clean separation of concerns that made cross-team collaboration efficient. A Node.js/Express API handles JWT-authenticated user sessions, PubMed querying, embedding computation, and MongoDB persistence, while the frontend is given full autonomy over graph rendering — receiving structured nodes and edges arrays it can pass directly into React Flow, Cytoscape.js, or D3. Node positions default to {0,0} and are patchable, so layout customization is a frontend concern without any backend coupling. Users can save, revisit, edit, and delete their citation webs from a personal dashboard, making the tool useful across an entire research project rather than just a single session.</p>
+        <p>The backend is built with a clean separation of concerns that made cross-team collaboration efficient. A Node.js/Express API handles JWT-authenticated user sessions, PubMed querying, embedding computation, and MongoDB persistence, while the frontend is given full autonomy over graph rendering — receiving structured nodes and edges arrays it can pass directly into React Flow, Cytoscape.js, or D3. Node positions default to <code>{0,0}</code> and are patchable, so layout customization is a frontend concern without any backend coupling. Users can save, revisit, edit, and delete their citation webs from a personal dashboard, making the tool useful across an entire research project rather than just a single session.</p>
       </div>
 
       <div class="modal-section">
         <h3>Key Distinctions</h3>
         <p>What distinguishes Web-Cite from existing tools like PubMed or EBSCO is the combination of automated semantic discovery with user-editable output. Existing citation graph tools either require users to build the web manually or produce static, non-customizable maps. Web-Cite generates the initial graph automatically from embedding similarity, then hands control back to the researcher — letting them reposition nodes, update titles, and build keyword webs that reflect their own mental model of a topic. The result is a tool that reduces the cold-start burden of literature review while preserving the researcher's agency over how their knowledge is organized.</p>
-        <div class="modal-inline-img"><img src="webcite2.png" alt="" /></div>
+        <div class="modal-inline-img">${img('img/webcite-2.jpg', 'Editable citation web')}</div>
       </div>
 
       <div class="modal-section">
         <h3>Tech Stack</h3>
-        ${techList(['React', 'FastAPI', 'Python', 'LangChain', 'Vector DB', 'PDF Parsing', 'LLM', 'Tailwind CSS'])}
+        ${techList(['Node.js', 'Express', 'MongoDB', 'React', 'D3', 'Embedding Search', 'PubMed API', 'JWT Auth'])}
         ${linksList([{ label: 'GitHub', url: 'https://github.com/noemiamahmud/web-cite' }])}
       </div>
     `
@@ -372,7 +959,7 @@ const projectData = {
     title: 'Melodify — AI Music Generator',
     tag: 'Hackathon',
     content: () => `
-      <div class="modal-hero-img"><img src="Screenshot 2025-09-08 at 7.42.12 PM.png" alt="" /></div>
+      <div class="modal-hero-img">${img('img/melodify-2.jpg', 'Melodify')}</div>
 
       <div class="modal-section">
         <h3>The Project</h3>
@@ -382,14 +969,12 @@ const projectData = {
       <div class="modal-section">
         <h3>How It Works</h3>
         <p>The backend is a Flask application structured around the standard app factory pattern — routes, models, and templates organized under an <code>app/</code> directory with a <code>run.py</code> entry point. A standalone <code>MusicGen.py</code> script wraps AudioCraft's generation pipeline, takes a text prompt as input, and writes the output to a <code>generated_audio/</code> folder that the Flask app then serves back to the user.</p>
-        <div class="modal-img-row">
-      </div>
       </div>
 
       <div class="modal-section">
         <h3>What I Learned</h3>
         <p>As one of my first end-to-end AI integrations, this project was a hands-on introduction to wiring a generative model into a real web application — handling model loading latency, serving binary audio output through a web server, and shipping something coherent under hackathon time pressure. The AudioCraft library is vendored directly in the repo, which kept the setup self-contained and demo-ready.</p>
-        <div class="modal-inline-img"><img src="Screenshot 2025-09-08 at 7.41.38 PM.png" alt="" /></div>
+        <div class="modal-inline-img">${img('img/melodify-1.jpg', 'Melodify UI')}</div>
       </div>
 
       <div class="modal-section">
@@ -404,7 +989,7 @@ const projectData = {
     title: 'Datathon — Workforce Forecasting & Optimization',
     tag: 'Hackathon',
     content: () => `
-      <div class="modal-hero-img"><img src="stats1.png" alt="" /></div>
+      <div class="modal-hero-img">${img('img/stats-1.jpg', 'Datathon forecasting results')}</div>
 
       <div class="modal-section">
         <h3>The Problem</h3>
@@ -412,13 +997,13 @@ const projectData = {
       </div>
 
       <div class="modal-section">
-        <h3>Data & Approach</h3>
+        <h3>Data &amp; Approach</h3>
         <p>Worked with two years of daily call metrics and three months of high-frequency 30-minute interval data across 4 portfolios, with up to 30 missing days in some clients. Identified strong intraday structure (9–11 AM peak, near-zero overnight), day-of-week effects (Monday highest, Sunday lowest), and longer-term seasonal trends. Built preprocessing pipelines to impute gaps, encode temporal and calendar features, and align daily and interval datasets for a two-stage modeling architecture.</p>
       </div>
 
       <div class="modal-img-row">
-        <div class="modal-inline-img"><img src="stats2.png" alt="" /></div>
-        <div class="modal-inline-img"><img src="stats3.png" alt="" /></div>
+        <div class="modal-inline-img">${img('img/stats-2.jpg', 'Intraday call volume structure')}</div>
+        <div class="modal-inline-img">${img('img/stats-3.jpg', 'Day-of-week effects')}</div>
       </div>
 
       <div class="modal-section">
@@ -428,7 +1013,7 @@ const projectData = {
         <p>Final output: SARIMAX daily total × IntradayNet slot weights × 1.07 upward bias = 30-minute interval forecasts.</p>
       </div>
 
-      <div class="modal-inline-img"><img src="stats4.png" alt="" /></div>
+      <div class="modal-inline-img">${img('img/stats-4.jpg', 'Model architecture diagram')}</div>
 
       <div class="modal-section">
         <h3>Asymmetric Cost Optimization</h3>
@@ -436,8 +1021,8 @@ const projectData = {
       </div>
 
       <div class="modal-img-row">
-        <div class="modal-inline-img"><img src="stats5.png" alt="" /></div>
-        <div class="modal-inline-img"><img src="stats6.png" alt="" /></div>
+        <div class="modal-inline-img">${img('img/stats-5.jpg', 'Forecast vs actuals')}</div>
+        <div class="modal-inline-img">${img('img/stats-6.jpg', 'Staffing capacity overlay')}</div>
       </div>
 
       <div class="modal-section">
@@ -457,7 +1042,7 @@ const projectData = {
     title: 'Student Wellness — Patient-Doctor Matching',
     tag: 'Hackathon',
     content: () => `
-      <div class="modal-hero-img"><img src="Screenshot 2025-09-08 at 7.33.11 PM.png" alt="" /></div>
+      <div class="modal-hero-img">${img('img/bthealth-2.jpg', 'BTHealth provider matching')}</div>
 
       <div class="modal-section">
         <h3>The Idea</h3>
@@ -466,11 +1051,11 @@ const projectData = {
 
       <div class="modal-section">
         <h3>Backend Architecture</h3>
-        <p>The technical architecture reflects a deliberate focus on correctness and maintainability. The backend is built in Flask with SQLAlchemy handling a normalized relational schema where symptoms act as a shared vocabulary between patients and providers — linked through PatientSymptom and ProviderSpecialty junction tables — making it straightforward to extend the symptom taxonomy or add new matching criteria without restructuring the core data model. JWT authentication keeps sessions stateless, and a public_id UUID on the Provider model decouples internal database keys from anything exposed to the client. The React frontend communicates through a centralized fetch wrapper that handles JWT injection uniformly, keeping authentication logic out of individual page components.</p>
+        <p>The technical architecture reflects a deliberate focus on correctness and maintainability. The backend is built in Flask with SQLAlchemy handling a normalized relational schema where symptoms act as a shared vocabulary between patients and providers — linked through PatientSymptom and ProviderSpecialty junction tables — making it straightforward to extend the symptom taxonomy or add new matching criteria without restructuring the core data model. JWT authentication keeps sessions stateless, and a <code>public_id</code> UUID on the Provider model decouples internal database keys from anything exposed to the client. The React frontend communicates through a centralized fetch wrapper that handles JWT injection uniformly, keeping authentication logic out of individual page components.</p>
         <div class="modal-img-row">
-        <div class="modal-inline-img"><img src="Screenshot 2025-09-08 at 7.30.34 PM.png" alt="" /></div>
-        <div class="modal-inline-img"><img src="Screenshot 2025-09-08 at 7.38.21 PM.png" alt="" /></div>
-      </div>
+          <div class="modal-inline-img">${img('img/bthealth-1.jpg', 'Intake form')}</div>
+          <div class="modal-inline-img">${img('img/bthealth-3.jpg', 'Ranked provider results')}</div>
+        </div>
       </div>
 
       <div class="modal-section">
@@ -479,10 +1064,10 @@ const projectData = {
       </div>
 
       <div class="modal-section">
-      <h3>Tech Stack</h3>
-      ${techList(['React 19', 'React Router DOM 7', 'Vite', 'Flask', 'Python', 'Flask-SQLAlchemy', 'Flask-Migrate', 'Flask-JWT-Extended', 'SQLite', 'Vanilla CSS'])}
-      ${linksList([{ label: 'GitHub', url: 'https://github.com/noemiamahmud/Code-ADA-2024-For_Portfolio' }])}
-    </div>
+        <h3>Tech Stack</h3>
+        ${techList(['React 19', 'React Router DOM 7', 'Vite', 'Flask', 'Python', 'Flask-SQLAlchemy', 'Flask-Migrate', 'Flask-JWT-Extended', 'SQLite'])}
+        ${linksList([{ label: 'GitHub', url: 'https://github.com/noemiamahmud/Code-ADA-2024-For_Portfolio' }])}
+      </div>
     `
   },
 
@@ -497,7 +1082,7 @@ const projectData = {
 
       <div class="modal-section">
         <h3>Live Preview</h3>
-        <iframe src="https://neurotechatuiuc.com/" class="modal-iframe" title="NeuroTech @ UIUC Live Preview"></iframe>
+        <iframe src="https://neurotechatuiuc.com/" class="modal-iframe" title="NeuroTech @ UIUC live preview" loading="lazy"></iframe>
       </div>
 
       <div class="modal-section">
@@ -532,7 +1117,7 @@ const projectData = {
 
       <div class="modal-section">
         <h3>Live Preview</h3>
-        <iframe src="https://noemiamahmud.github.io/illinispeed/" class="modal-iframe" title="IlliniSpeed Live Preview"></iframe>
+        <iframe src="https://noemiamahmud.github.io/illinispeed/" class="modal-iframe" title="IlliniSpeed live preview" loading="lazy"></iframe>
       </div>
 
       <div class="modal-section">
@@ -567,7 +1152,7 @@ const projectData = {
 
       <div class="modal-section">
         <h3>Live Preview</h3>
-        <iframe src="https://noemiamahmud.github.io/wecehacks.github.io/" class="modal-iframe" title="WECE Hacks 2025 Live Preview"></iframe>
+        <iframe src="https://noemiamahmud.github.io/wecehacks.github.io/" class="modal-iframe" title="WECE Hacks 2025 live preview" loading="lazy"></iframe>
       </div>
 
       <div class="modal-section">
@@ -593,9 +1178,9 @@ const projectData = {
 
   'misc': {
     title: 'Short Track Speed Skating',
-    tag: 'Misc',
+    tag: 'Beyond Code',
     content: () => `
-      <div class="modal-hero-img"><img src="IMG_6747.JPG" alt="" /></div>
+      <div class="modal-hero-img">${img('img/skate-1.jpg', 'Short track speed skating')}</div>
 
       <div class="modal-section">
         <h3>The Sport</h3>
@@ -606,26 +1191,25 @@ const projectData = {
         <h3>Competitive Career</h3>
         <p>Throughout high school, I competed at the national level in short track speed skating, earning a national ranking and setting state records. The training was year-round — on-ice technique sessions, off-ice conditioning, and race strategy review. Competing at that level taught me discipline, how to perform under pressure, and how to recover from setbacks quickly.</p>
         <div class="modal-img-row">
-        <div class="modal-inline-img"><img src="NorthBurkeOpen2023_173 2.jpg" alt="" /></div>
-        <div class="modal-inline-img"><img src="IMG_6375.JPG" alt="" /></div>
-      </div>
+          <div class="modal-inline-img">${img('img/skate-2.jpg', 'Racing')}</div>
+          <div class="modal-inline-img">${img('img/skate-3.jpg', 'Competition')}</div>
+        </div>
       </div>
 
       <div class="modal-section">
-        <h3>State Records & National Ranking</h3>
+        <h3>State Records &amp; National Ranking</h3>
         <p>Held state records and achieved a national ranking that placed me among the top competitors in my age group. Every record came from months of incremental improvement — shaving fractions of a second through better crossover technique, sharper cornering, and smarter race tactics.</p>
-        <div class="modal-inline-img"><img src="IMG_9809.png" alt="" /></div>
+        <div class="modal-inline-img">${img('img/skate-4.jpg', 'On the podium')}</div>
       </div>
 
       <div class="modal-section">
         <h3>Transition to College</h3>
         <p>Coming to UIUC, I transitioned from competitor to community builder. I helped found our Illini speed skating student organization and took on leadership and organizing roles — coordinating practice schedules, recruiting new skaters, and running events to grow the sport on campus.</p>
         <div class="modal-img-row">
-        <div class="modal-inline-img"><img src="IMG_77720DAAEC75-1 (1).jpeg" alt="" /></div>
-        <div class="modal-inline-img"><img src="IMG_8AF84EE06C93-1 (1).jpeg" alt="" /></div>
+          <div class="modal-inline-img">${img('img/skate-5.jpg', 'Illini speed skating')}</div>
+          <div class="modal-inline-img">${img('img/skate-6.jpg', 'Team')}</div>
+        </div>
       </div>
-      </div>
-
 
       <div class="modal-section">
         <h3>What Skating Taught Me</h3>
@@ -635,117 +1219,347 @@ const projectData = {
   }
 };
 
-/* ===== Project filtering (projects page) ===== */
-const filterBtns = document.querySelectorAll('.filter-btn');
-/* Select all project cards including the featured card above the grid */
-const projectCards = document.querySelectorAll('.project-card, .project-card-featured');
+/* ===== 13. FILTERS ===== */
+(function filters() {
+  const btns = $$('.filter-btn');
+  const cards = $$('.card[data-category]');
+  if (!btns.length || !cards.length) return;
+  const empty = $('.empty-state');
 
-filterBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    filterBtns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+  // Live counts per category, derived from the DOM.
+  btns.forEach(btn => {
+    const f = btn.dataset.filter;
+    const n = f === 'all' ? cards.length : cards.filter(c => c.dataset.category === f).length;
+    const small = btn.querySelector('small');
+    if (small) small.textContent = String(n);
+  });
 
-    const filter = btn.dataset.filter;
-    projectCards.forEach(card => {
-      const show = filter === 'all' || card.dataset.category === filter;
-      if (show) {
-        /* Featured card needs flex display; regular cards use default */
-        card.style.display = card.classList.contains('project-card-featured') ? 'flex' : '';
-      } else {
-        card.style.display = 'none';
+  function apply(filter, push = true) {
+    let shown = 0;
+    cards.forEach(card => {
+      const match = filter === 'all' || card.dataset.category === filter;
+      card.classList.toggle('is-hidden', !match);
+      if (match) {
+        shown++;
+        card.classList.remove('is-filtering');
+        void card.offsetWidth;          // restart the entry animation
+        card.classList.add('is-filtering');
       }
     });
+    btns.forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
+    if (empty) empty.hidden = shown > 0;
+
+    if (push) {
+      const url = new URL(window.location);
+      if (filter === 'all') url.searchParams.delete('filter');
+      else url.searchParams.set('filter', filter);
+      history.replaceState(null, '', url);
+    }
+  }
+
+  btns.forEach(btn => btn.addEventListener('click', () => apply(btn.dataset.filter)));
+
+  const initial = new URL(window.location).searchParams.get('filter');
+  if (initial && btns.some(b => b.dataset.filter === initial)) apply(initial, false);
+})();
+
+/* ===== 14. MODAL ===== */
+const Modal = (function () {
+  const overlay = $('#project-modal');
+  if (!overlay) return { open() {}, close() {} };
+
+  const scroll = $('.modal-scroll', overlay);
+  const body = $('#modal-body', overlay);
+  const crumb = $('.modal-crumb', overlay);
+  const closeBtn = $('.modal-close', overlay);
+  const prevBtn = $('.modal-prev', overlay);
+  const nextBtn = $('.modal-next', overlay);
+
+  // Order follows the cards as they appear on the page.
+  const order = $$('.card[data-project]').map(c => c.dataset.project).filter(k => projectData[k]);
+  let current = null;
+  let lastFocus = null;
+
+  function render(key) {
+    const data = projectData[key];
+    if (!data) return;
+    current = key;
+    body.innerHTML = `
+      <h2 class="modal-title">${data.title}</h2>
+      <span class="modal-tag">${data.tag}</span>
+      ${data.content()}
+    `;
+    if (crumb) crumb.textContent = `~/projects/${key}`;
+    scroll.scrollTop = 0;
+    const i = order.indexOf(key);
+    if (prevBtn) prevBtn.disabled = i <= 0;
+    if (nextBtn) nextBtn.disabled = i === -1 || i >= order.length - 1;
+  }
+
+  function open(key, pushHash = true) {
+    if (!projectData[key]) return;
+    lastFocus = document.activeElement;
+    render(key);
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    if (pushHash) history.replaceState(null, '', `#${key}`);
+    setTimeout(() => closeBtn && closeBtn.focus(), 60);
+  }
+
+  function close() {
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    current = null;
+    // Stop any playing media inside the modal.
+    $$('video', body).forEach(v => v.pause());
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+    if (lastFocus) lastFocus.focus();
+  }
+
+  function step(dir) {
+    const i = order.indexOf(current);
+    const next = order[i + dir];
+    if (next) { render(next); history.replaceState(null, '', `#${next}`); }
+  }
+
+  $$('.card[data-project]').forEach(card => {
+    card.addEventListener('click', () => open(card.dataset.project));
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(card.dataset.project); }
+    });
+  });
+
+  closeBtn && closeBtn.addEventListener('click', close);
+  prevBtn && prevBtn.addEventListener('click', () => step(-1));
+  nextBtn && nextBtn.addEventListener('click', () => step(1));
+  overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+
+  document.addEventListener('keydown', e => {
+    if (!overlay.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') step(-1);
+    if (e.key === 'ArrowRight') step(1);
+    // Keep focus inside the dialog.
+    if (e.key === 'Tab') {
+      const f = $$('a[href], button:not([disabled]), iframe, video, [tabindex]:not([tabindex="-1"])', overlay)
+        .filter(el => el.offsetParent !== null);
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+
+  // Deep link: projects.html#datathon opens that modal.
+  const hash = location.hash.slice(1);
+  if (hash && projectData[hash]) setTimeout(() => open(hash, false), 260);
+
+  return { open, close };
+})();
+
+/* ===== 15. COMMAND PALETTE ===== */
+(function palette() {
+  const root = $('#cmdk');
+  if (!root) return;
+
+  const input = $('.cmdk-input input', root);
+  const list = $('.cmdk-list', root);
+  const onProjects = /projects\.html$/.test(location.pathname) || $('#project-modal');
+
+  const ico = {
+    page:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>',
+    project: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg>',
+    action:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m13 2-3 8h6l-3 12"/></svg>'
+  };
+
+  const items = [
+    { group: 'Navigate', label: 'Home',     icon: ico.page, run: () => (location.href = 'index.html') },
+    { group: 'Navigate', label: 'Projects', icon: ico.page, run: () => (location.href = 'projects.html') },
+    { group: 'Navigate', label: 'Contact',  icon: ico.page, run: () => (location.href = 'contact.html') },
+    ...Object.entries(projectData).map(([key, p]) => ({
+      group: 'Projects',
+      label: p.title,
+      hint: p.tag,
+      icon: ico.project,
+      run: () => {
+        if (onProjects) Modal.open(key);
+        else location.href = `projects.html#${key}`;
+      }
+    })),
+    {
+      group: 'Actions', label: 'Copy email address', hint: 'noemiamahmud@gmail.com', icon: ico.action,
+      run: () => copyText('noemiamahmud@gmail.com', 'Email copied to clipboard')
+    },
+    {
+      group: 'Actions', label: 'Open résumé', icon: ico.action,
+      run: () => window.open('https://drive.google.com/file/d/1a5KK6eg_4d5hkI7UKKVegxdsf7iyWWrS/view?usp=sharing', '_blank', 'noopener')
+    },
+    { group: 'Actions', label: 'GitHub profile',   icon: ico.action, run: () => window.open('https://github.com/noemiamahmud', '_blank', 'noopener') },
+    { group: 'Actions', label: 'LinkedIn profile', icon: ico.action, run: () => window.open('https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/', '_blank', 'noopener') },
+    { group: 'Actions', label: 'Toggle theme', hint: 'light / dark', icon: ico.action, run: () => $('#theme-toggle').click() }
+  ];
+
+  let results = items;
+  let active = 0;
+
+  function draw() {
+    if (!results.length) {
+      list.innerHTML = '<div class="cmdk-empty">No results</div>';
+      return;
+    }
+    let html = '', group = '';
+    results.forEach((item, i) => {
+      if (item.group !== group) {
+        group = item.group;
+        html += `<div class="cmdk-group">${group}</div>`;
+      }
+      html += `<button class="cmdk-item" role="option" data-i="${i}" aria-selected="${i === active}">
+        <span class="ci-ico">${item.icon}</span>
+        <span>${item.label}</span>
+        ${item.hint ? `<span class="hint">${item.hint}</span>` : ''}
+      </button>`;
+    });
+    list.innerHTML = html;
+    const sel = list.querySelector('[aria-selected="true"]');
+    if (sel) sel.scrollIntoView({ block: 'nearest' });
+  }
+
+  function search(q) {
+    const s = q.trim().toLowerCase();
+    results = s
+      ? items.filter(i => (i.label + ' ' + (i.hint || '') + ' ' + i.group).toLowerCase().includes(s))
+      : items;
+    active = 0;
+    draw();
+  }
+
+  function open() {
+    root.classList.add('open');
+    root.setAttribute('aria-hidden', 'false');
+    input.value = '';
+    search('');
+    setTimeout(() => input.focus(), 40);
+  }
+  function close() {
+    root.classList.remove('open');
+    root.setAttribute('aria-hidden', 'true');
+  }
+
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      root.classList.contains('open') ? close() : open();
+      return;
+    }
+    if (!root.classList.contains('open')) return;
+    if (e.key === 'Escape') { e.preventDefault(); close(); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); active = (active + 1) % results.length; draw(); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); active = (active - 1 + results.length) % results.length; draw(); }
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const item = results[active];
+      if (item) { close(); item.run(); }
+    }
+  });
+
+  input.addEventListener('input', () => search(input.value));
+  list.addEventListener('click', e => {
+    const btn = e.target.closest('.cmdk-item');
+    if (!btn) return;
+    const item = results[+btn.dataset.i];
+    close();
+    item.run();
+  });
+  list.addEventListener('mousemove', e => {
+    const btn = e.target.closest('.cmdk-item');
+    if (btn && +btn.dataset.i !== active) { active = +btn.dataset.i; draw(); }
+  });
+  root.addEventListener('click', e => { if (e.target === root) close(); });
+  $$('[data-open-cmdk]').forEach(b => b.addEventListener('click', open));
+})();
+
+/* ===== 16. COPY / TOAST ===== */
+function toast(msg) {
+  const el = $('#toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+async function copyText(text, msg) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast(msg || 'Copied');
+    return true;
+  } catch (e) {
+    // Fallback for non-secure contexts (e.g. file://).
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); toast(msg || 'Copied'); } catch (_) { toast('Copy failed'); }
+    ta.remove();
+    return false;
+  }
+}
+
+$$('[data-copy]').forEach(btn => {
+  btn.addEventListener('click', async e => {
+    e.preventDefault();
+    e.stopPropagation();
+    await copyText(btn.dataset.copy, 'Copied to clipboard');
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 1600);
   });
 });
 
-/* ===== Project modal ===== */
-const modalOverlay = document.getElementById('project-modal');
-
-if (modalOverlay) {
-  const modalClose = modalOverlay.querySelector('.modal-close');
-
-  projectCards.forEach(card => {
-    card.addEventListener('click', () => {
-      const key = card.dataset.project;
-      const data = projectData[key];
-      if (!data) return;
-
-      const modalBody = document.getElementById('modal-body');
-      modalBody.innerHTML = `
-        <h2>${data.title}</h2>
-        <span class="modal-tag">${data.tag}</span>
-        ${data.content()}
-      `;
-
-      modalOverlay.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    });
-  });
-
-  modalClose.addEventListener('click', closeModal);
-  modalOverlay.addEventListener('click', (e) => {
-    if (e.target === modalOverlay) closeModal();
-  });
-
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modalOverlay.classList.contains('open')) {
-      closeModal();
-    }
-  });
-}
-
-function closeModal() {
-  if (!modalOverlay) return;
-  modalOverlay.classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-/* ===== Deep-link: open modal if URL hash matches a project ID ===== */
-function checkHashForProject() {
-  const hash = window.location.hash.replace('#', '');
-  if (hash && projectData[hash]) {
-    const card = document.querySelector(`.project-card[data-project="${hash}"]`);
-    if (card) card.click();
-  }
-}
-window.addEventListener('load', checkHashForProject);
-
-/* ===== Contact form handler (Formspree) ===== */
-(function () {
-  const form = document.getElementById('contact-form');
+/* ===== 17. CONTACT FORM ===== */
+(function contactForm() {
+  const form = $('#contact-form');
   if (!form) return;
+  const status = $('#form-status');
+  const btn = form.querySelector('button[type="submit"]');
+  const label = btn.textContent;
 
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
-    const btn = form.querySelector('button[type="submit"]');
-    const status = document.getElementById('form-status');
-    btn.textContent = 'Sending…';
     btn.disabled = true;
+    btn.textContent = 'Sending…';
+    status.className = 'form-status';
     status.textContent = '';
 
-    fetch(form.action, {
-      method: 'POST',
-      body: new FormData(form),
-      headers: { Accept: 'application/json' }
-    })
-      .then(function (res) {
-        if (res.ok) {
-          status.textContent = 'Message sent — thank you!';
-          status.style.color = 'var(--color-accent)';
-          form.reset();
-        } else {
-          return res.json().then(function (data) {
-            throw new Error(data.errors ? data.errors.map(function (err) { return err.message; }).join(', ') : 'Send failed');
-          });
-        }
-      })
-      .catch(function (err) {
-        status.textContent = 'Something went wrong: ' + err.message;
-        status.style.color = '#e74c3c';
-      })
-      .finally(function () {
-        btn.textContent = 'Send Message';
-        btn.disabled = false;
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' }
       });
+      if (res.ok) {
+        status.className = 'form-status ok';
+        status.textContent = '✓ Message sent — I\'ll get back to you soon.';
+        form.reset();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.errors ? data.errors.map(x => x.message).join(', ') : 'Send failed');
+      }
+    } catch (err) {
+      status.className = 'form-status err';
+      status.textContent = '✕ ' + err.message;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = label;
+    }
   });
 })();
+
+/* ===== 18. HERO ENTRANCE ===== */
+window.addEventListener('DOMContentLoaded', () => {
+  const hero = $('.hero');
+  if (hero) requestAnimationFrame(() => hero.classList.add('ready'));
+});

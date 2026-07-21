@@ -1,110 +1,235 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Contact | Noemia L. Mahmud</title>
-  <link rel="stylesheet" href="styles.css"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — Noemia L. Mahmud</title>
+  <meta name="description" content="Get in touch with Noemia L. Mahmud about research collaborations, internships, and engineering work at the intersection of neuroscience and AI." />
+  <meta name="theme-color" content="#07070c" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Contact — Noemia L. Mahmud" />
+  <meta property="og:description" content="Research collaborations, internships, and interesting problems." />
+  <meta property="og:image" content="img/portrait.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <script>
+    (function () {
+      try {
+        // Dark is the designed default; light is opt-in via the toggle.
+        var t = localStorage.getItem('theme');
+        if (t) document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- Navigation -->
+  <div class="grain" aria-hidden="true"></div>
+  <div class="scroll-progress" aria-hidden="true"></div>
+  <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" aria-hidden="true"></div>
+
+  <!-- ===== NAV ===== -->
   <nav class="navbar">
     <div class="container">
-      <a href="index.html" class="nav-logo">Noemia L. Mahmud</a>
-      <button class="nav-toggle" aria-label="Toggle navigation">
-        <span></span><span></span><span></span>
-      </button>
+      <a href="index.html" class="nav-logo">
+        <span class="mark">NM</span>
+        <span>Noemia L. Mahmud</span>
+      </a>
+
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="projects.html">Projects</a></li>
         <li><a href="contact.html" class="active">Contact</a></li>
-        <li><a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer">GitHub</a></li>
       </ul>
+
+      <div class="nav-right">
+        <button class="kbd-btn" data-open-cmdk aria-label="Open command menu">
+          <span>Search</span><kbd>⌘K</kbd>
+        </button>
+        <button class="icon-btn" id="theme-toggle" aria-label="Switch to light theme">
+          <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </nav>
 
-  <!-- Animated Neural Banner -->
-  <div class="neural-banner">
-    <canvas id="neural-canvas"></canvas>
-  </div>
+  <main id="main">
+    <section class="section" style="padding-top: calc(var(--nav-h) + 72px);">
+      <div class="aurora" aria-hidden="true"><span class="b1"></span><span class="b2"></span></div>
 
-  <section class="section">
-    <div class="container">
-      <div class="contact-layout">
+      <div class="container" style="position:relative; z-index:2;">
+        <div class="contact-grid">
 
-        <div class="contact-info">
-          <h2>Get in Touch</h2>
-          <p>Feel free to reach out for collaborations, research opportunities, or just to say hello.</p>
+          <div data-stagger>
+            <span class="eyebrow" data-reveal="fade">Contact</span>
+            <h1 class="h-lg" data-reveal>Let's build something <span class="grad">worth explaining</span>.</h1>
+            <p class="lede" data-reveal>
+              Open to research collaborations, internships, and any problem sitting at the edge of
+              neuroscience and machine learning. I read everything that lands here.
+            </p>
 
-          <div class="contact-links">
-            <a href="mailto:noemiamahmud@gmail.com" class="contact-link-item">
-              <div class="cl-icon">@</div>
-              <div>
-                <div class="cl-label">Email</div>
-                <div class="cl-value">noemiamahmud@gmail.com</div>
-              </div>
-            </a>
+            <div class="contact-links">
+              <a href="mailto:noemiamahmud@gmail.com" class="contact-item" data-reveal="left">
+                <span class="ci-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+                </span>
+                <span class="ci-body">
+                  <span class="ci-label">Email</span>
+                  <span class="ci-value">noemiamahmud@gmail.com</span>
+                </span>
+                <button class="copy-btn" data-copy="noemiamahmud@gmail.com" aria-label="Copy email address">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </a>
 
-            <a href="https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/" target="_blank" rel="noopener noreferrer" class="contact-link-item">
-              <div class="cl-icon">in</div>
-              <div>
-                <div class="cl-label">LinkedIn</div>
-                <div class="cl-value">noemia-mahmud</div>
-              </div>
-            </a>
+              <a href="https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/" target="_blank" rel="noopener noreferrer" class="contact-item" data-reveal="left">
+                <span class="ci-icon">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.36-1.85 3.59 0 4.25 2.36 4.25 5.44v6.3zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+                </span>
+                <span class="ci-body">
+                  <span class="ci-label">LinkedIn</span>
+                  <span class="ci-value">noemia-mahmud</span>
+                </span>
+                <span class="ci-arrow">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>
+                </span>
+              </a>
 
-            <a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer" class="contact-link-item">
-              <div class="cl-icon">&lt;/&gt;</div>
-              <div>
-                <div class="cl-label">GitHub</div>
-                <div class="cl-value">noemiamahmud</div>
-              </div>
-            </a>
+              <a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer" class="contact-item" data-reveal="left">
+                <span class="ci-icon">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.23c-3.34.73-4.04-1.42-4.04-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.96 0-1.32.47-2.39 1.24-3.23-.12-.31-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6.01 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.18.77.84 1.24 1.91 1.24 3.23 0 4.63-2.81 5.65-5.49 5.95.43.37.82 1.1.82 2.22v3.29c0 .32.21.7.83.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"/></svg>
+                </span>
+                <span class="ci-body">
+                  <span class="ci-label">GitHub</span>
+                  <span class="ci-value">noemiamahmud</span>
+                </span>
+                <span class="ci-arrow">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>
+                </span>
+              </a>
+
+              <a href="https://drive.google.com/file/d/1a5KK6eg_4d5hkI7UKKVegxdsf7iyWWrS/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="contact-item" data-reveal="left">
+                <span class="ci-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15h6M9 11h3"/></svg>
+                </span>
+                <span class="ci-body">
+                  <span class="ci-label">Résumé</span>
+                  <span class="ci-value">Download PDF</span>
+                </span>
+                <span class="ci-arrow">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg>
+                </span>
+              </a>
+            </div>
+
+            <dl class="about-facts" data-reveal>
+              <div><dt>Based in</dt><dd>Urbana–Champaign, IL</dd></div>
+              <div><dt>Status</dt><dd>Open to opportunities</dd></div>
+            </dl>
           </div>
-        </div>
 
-        <div class="contact-form">
-          <h3>Send a Message</h3>
-          <form id="contact-form" action="https://formspree.io/f/xeepzbjg" method="POST">
-            <div class="form-group">
-              <label for="name">Name</label>
-              <input type="text" id="name" name="name" required />
-            </div>
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" required />
-            </div>
-            <div class="form-group">
-              <label for="message">Message</label>
-              <textarea id="message" name="message" required></textarea>
-            </div>
-            <input type="hidden" name="_subject" value="New message from portfolio contact form" />
-            <input type="hidden" name="_next" value="" id="form-next-url" />
-            <button type="submit">Send Message</button>
-            <p id="form-status" style="margin-top:1rem;"></p>
-          </form>
-        </div>
+          <div class="form-card" data-reveal="scale">
+            <h2 class="h-md" style="margin-bottom:6px;">Send a message</h2>
+            <p style="color:var(--tx-2); font-size:.92rem; margin-bottom:26px;">
+              Straight to my inbox — no newsletter, no autoresponder.
+            </p>
 
+            <form id="contact-form" action="https://formspree.io/f/xeepzbjg" method="POST" novalidate>
+              <div class="field">
+                <input type="text" id="name" name="name" placeholder=" " required autocomplete="name" />
+                <label for="name">Name</label>
+              </div>
+              <div class="field">
+                <input type="email" id="email" name="email" placeholder=" " required autocomplete="email" />
+                <label for="email">Email</label>
+              </div>
+              <div class="field">
+                <textarea id="message" name="message" placeholder=" " required></textarea>
+                <label for="message">Message</label>
+              </div>
+              <input type="hidden" name="_subject" value="New message from portfolio contact form" />
+
+              <button type="submit" class="btn btn--primary" style="width:100%;">
+                Send message
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+              <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
+            </form>
+          </div>
+
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
-  <!-- Footer -->
+  <!-- ===== FOOTER ===== -->
   <footer class="footer">
     <div class="container">
-      <p>&copy; 2026 Noemia L. Mahmud</p>
-      <div class="footer-links">
-        <a href="mailto:noemiamahmud@gmail.com">Email</a>
-        <a href="https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-        <a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-logo"><span class="mark">NM</span><span>Noemia L. Mahmud</span></a>
+          <p>Neuroscience × AI · University of Illinois Urbana-Champaign</p>
+        </div>
+        <div class="footer-cols">
+          <div class="footer-col">
+            <h4>Pages</h4>
+            <ul>
+              <li><a href="index.html">Home</a></li>
+              <li><a href="projects.html">Projects</a></li>
+              <li><a href="contact.html">Contact</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Elsewhere</h4>
+            <ul>
+              <li><a href="https://github.com/noemiamahmud" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+              <li><a href="https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+              <li><a href="mailto:noemiamahmud@gmail.com">Email</a></li>
+              <li><a href="https://drive.google.com/file/d/1a5KK6eg_4d5hkI7UKKVegxdsf7iyWWrS/view?usp=sharing" target="_blank" rel="noopener noreferrer">Résumé</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Noemia L. Mahmud — built from scratch, no frameworks</span>
+        <button class="to-top">
+          Back to top
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </button>
       </div>
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <!-- ===== COMMAND PALETTE ===== -->
+  <div class="cmdk" id="cmdk" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Command menu">
+    <div class="cmdk-panel">
+      <div class="cmdk-input">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" placeholder="Search projects, pages, actions…" aria-label="Search" />
+      </div>
+      <div class="cmdk-list" role="listbox"></div>
+      <div class="cmdk-foot">
+        <span><kbd>↑</kbd><kbd>↓</kbd> navigate</span>
+        <span><kbd>↵</kbd> select</span>
+        <span><kbd>esc</kbd> close</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js" defer></script>
 </body>
 </html>
