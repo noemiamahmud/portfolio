@@ -192,10 +192,88 @@
       <div class="container">
         <div class="about-grid">
           <div data-reveal="left">
-            <div class="portrait">
-              <img src="img/portrait.jpg" alt="Portrait of Noemia L. Mahmud" width="800" height="1000" />
-              <span class="portrait-badge">Urbana–Champaign, IL</span>
+            <!-- Nodes and edges are generated in script.js (module 10c) from the
+                 workGraph data; edges mean two things share a technology. -->
+            <div class="workgraph" id="workgraph" role="group"
+                 aria-label="Interactive map of my projects and roles, linked by shared technology">
+              <canvas class="wg-canvas" aria-hidden="true"></canvas>
+              <!-- Split brain mark: organic gyri on the left, circuit traces on
+                   the right — the two halves of the heading beside it. -->
+              <div class="wg-hub">
+                <svg class="brainmark" viewBox="0 0 100 100" role="img"
+                     aria-label="Illustration of a brain, half organic and half circuit">
+                  <defs>
+                    <linearGradient id="bmOrganic" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stop-color="var(--a2)" stop-opacity=".30" />
+                      <stop offset="100%" stop-color="var(--a2)" stop-opacity=".05" />
+                    </linearGradient>
+                    <linearGradient id="bmCircuit" x1="1" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="var(--a1)" stop-opacity=".34" />
+                      <stop offset="100%" stop-color="var(--a1)" stop-opacity=".05" />
+                    </linearGradient>
+
+                    <!-- Paths are defined once, then drawn twice: a permanent
+                         structure layer and a travelling spark on top.
+                         pathLength=100 normalises the dash so every spark moves
+                         at the same speed regardless of path length. -->
+                    <path id="bmO1" pathLength="100" d="M46 32 C38 33, 32 38, 34 45" />
+                    <path id="bmO2" pathLength="100" d="M45 46 C36 46, 28 50, 30 58" />
+                    <path id="bmO3" pathLength="100" d="M45 61 C38 62, 33 66, 35 71" />
+                    <path id="bmO4" pathLength="100" d="M29 35 C24 41, 24 48, 28 52" />
+                    <path id="bmC1" pathLength="100" d="M54 33 H66 V42 H73" />
+                    <path id="bmC2" pathLength="100" d="M54 46 H62 L68 52 H78" />
+                    <path id="bmC3" pathLength="100" d="M54 60 H64 V68" />
+                    <path id="bmC4" pathLength="100" d="M70 31 V38 H79 V47" />
+                  </defs>
+
+                  <!-- outer orbit -->
+                  <circle class="bm-ring" cx="50" cy="50" r="45" />
+
+                  <!-- hemispheres -->
+                  <path class="bm-shell bm-shell--organic" fill="url(#bmOrganic)"
+                        d="M50 24 C42 18, 30 20, 27 28 C19 29, 14 37, 18 44 C12 49, 13 59, 20 62 C19 71, 26 78, 35 76 C39 81, 47 82, 50 76 Z" />
+                  <path class="bm-shell bm-shell--circuit" fill="url(#bmCircuit)"
+                        d="M50 24 C58 18, 70 20, 73 28 C81 29, 86 37, 82 44 C88 49, 87 59, 80 62 C81 71, 74 78, 65 76 C61 81, 53 82, 50 76 Z" />
+
+                  <!-- permanent structure -->
+                  <g class="bm-struct bm-struct--organic">
+                    <use href="#bmO1" /><use href="#bmO2" /><use href="#bmO3" /><use href="#bmO4" />
+                  </g>
+                  <g class="bm-struct bm-struct--circuit">
+                    <use href="#bmC1" /><use href="#bmC2" /><use href="#bmC3" /><use href="#bmC4" />
+                  </g>
+
+                  <!-- travelling signals -->
+                  <g class="bm-spark bm-spark--organic">
+                    <use href="#bmO1" /><use href="#bmO2" /><use href="#bmO3" /><use href="#bmO4" />
+                  </g>
+                  <g class="bm-spark bm-spark--circuit">
+                    <use href="#bmC1" /><use href="#bmC2" /><use href="#bmC3" /><use href="#bmC4" />
+                  </g>
+
+                  <g class="bm-nodes">
+                    <circle cx="73" cy="42" r="2.2" />
+                    <circle cx="78" cy="52" r="2.2" />
+                    <circle cx="64" cy="68" r="2.2" />
+                    <circle cx="79" cy="47" r="2.2" />
+                  </g>
+                  <g class="bm-vias">
+                    <circle cx="54" cy="33" r="1.3" />
+                    <circle cx="54" cy="46" r="1.3" />
+                    <circle cx="54" cy="60" r="1.3" />
+                  </g>
+
+                  <line class="bm-seam" x1="50" y1="23" x2="50" y2="79" />
+                </svg>
+              </div>
             </div>
+            <div class="wg-key" aria-hidden="true">
+              <span><i data-group="role" style="background:#22d3ee"></i>Role</span>
+              <span><i data-group="ai" style="background:#7c5cff"></i>AI / ML</span>
+              <span><i data-group="fullstack" style="background:#ff77b9"></i>Full stack</span>
+              <span><i data-group="web" style="background:#fbbf24"></i>Web</span>
+            </div>
+            <p class="wg-hint">connected when they share a technology — click to explore</p>
           </div>
 
           <div data-stagger>

@@ -459,6 +459,469 @@ function raf(fn) {
   })();
 })();
 
+/* ===== 10c. WORK CONSTELLATION =====
+   A living synapse map. Force-directed layout (hand-rolled spring/repulsion,
+   no dependencies), continuous signal traffic along the axons, per-node cursor
+   physics, and staggered spring entrance.
+
+   ---------------------------------------------------------------------------
+   EDIT HERE. Nodes carry their own tech list; an edge is created wherever two
+   nodes share at least MIN_SHARED technologies. Add pairs to EXTRA_EDGES to
+   force a connection the tech lists don't produce.
+   --------------------------------------------------------------------------- */
+const workGraph = [
+  { label: 'Brookhaven',   group: 'role', href: '#experience',
+    tech: ['LangGraph', 'MCP', 'LangSmith', 'vLLM', 'Python', 'PyTorch'] },
+  { label: 'Jocasta',      group: 'role', href: '#experience',
+    tech: ['Python', 'Genomics', 'AI Pipelines'] },
+  { label: 'RAG Health',   group: 'ai', href: 'projects.html#rag-chatbot',
+    tech: ['RAG', 'Qdrant', 'Embeddings', 'Python', 'React', 'Flask'] },
+  { label: 'Rat Behavior', group: 'ai', href: 'projects.html#deeplabcut',
+    tech: ['PyTorch', 'Computer Vision', 'DeepLabCut', 'Python', 'FastAPI'] },
+  { label: 'Datathon',     group: 'ai', href: 'projects.html#datathon',
+    tech: ['PyTorch', 'Pandas', 'Python', 'SARIMAX', 'Statistics'] },
+  { label: 'Web-Cite',     group: 'fullstack', href: 'projects.html#brainstorm',
+    tech: ['Node.js', 'MongoDB', 'React', 'D3', 'Embeddings', 'JavaScript'] },
+  { label: 'MindLift',     group: 'ai', href: 'projects.html#neurotech-vr',
+    tech: ['MediaPipe', 'Computer Vision', 'Unity', 'C#', 'Python'] },
+  { label: 'BTHealth',     group: 'fullstack', href: 'projects.html#code-to-cure',
+    tech: ['React', 'Flask', 'Python', 'SQLite'] },
+  { label: 'Melodify',     group: 'fullstack', href: 'projects.html#melodify',
+    tech: ['Python', 'Flask', 'AudioCraft'] },
+  { label: 'Club Sites',   group: 'web', href: 'projects.html#neurotech-site',
+    tech: ['HTML', 'CSS', 'JavaScript'] }
+];
+
+// Explicit extra connections, by label: [['Melodify', 'Club Sites'], ...]
+const EXTRA_EDGES = [];
+const MIN_SHARED = 2;
+
+(function constellation() {
+  const root = $('#workgraph');
+  if (!root) return;
+
+  const canvas = $('.wg-canvas', root);
+  const ctx = canvas.getContext('2d');
+  const hubEl = $('.wg-hub', root);
+  const legendDots = $$('.wg-key i[data-group]');
+
+  const COLOR = { role: '#22d3ee', ai: '#7c5cff', fullstack: '#ff77b9', web: '#fbbf24' };
+  const rgb = { role: [34, 211, 238], ai: [124, 92, 255], fullstack: [255, 119, 185], web: [251, 191, 36] };
+
+  /* ---------- graph ---------- */
+  const byLabel = new Map(workGraph.map((n, i) => [n.label, i]));
+  const edges = [];
+  const seen = new Set();
+  function addEdge(a, b, w, shared) {
+    const k = a < b ? a + ':' + b : b + ':' + a;
+    if (a === b || seen.has(k)) return;
+    seen.add(k);
+    edges.push({ a, b, w, shared });
+  }
+  for (let i = 0; i < workGraph.length; i++) {
+    for (let j = i + 1; j < workGraph.length; j++) {
+      const shared = workGraph[i].tech.filter(t => workGraph[j].tech.includes(t));
+      if (shared.length >= MIN_SHARED) addEdge(i, j, shared.length, shared);
+    }
+  }
+  EXTRA_EDGES.forEach(([x, y]) => {
+    if (byLabel.has(x) && byLabel.has(y)) addEdge(byLabel.get(x), byLabel.get(y), 2, []);
+  });
+
+  const adj = workGraph.map(() => new Set());
+  edges.forEach(e => { adj[e.a].add(e.b); adj[e.b].add(e.a); });
+
+  /* ---------- nodes ---------- */
+  const nodes = workGraph.map((n, i) => {
+    const a = (i / workGraph.length) * Math.PI * 2 - Math.PI / 2;
+    return {
+      ...n, i,
+      x: Math.cos(a) * 120, y: Math.sin(a) * 120,   // seeded, sim settles them
+      vx: 0, vy: 0, hw: 46, hh: 13,
+      phase: Math.random() * Math.PI * 2,
+      bob: 2.4 + Math.random() * 2.2,
+      period: 0.5 + Math.random() * 0.5,
+      flash: 0, enter: 0, el: null
+    };
+  });
+
+  const frag = document.createDocumentFragment();
+  nodes.forEach((n, i) => {
+    const a = document.createElement('a');
+    a.className = 'wg-node';
+    a.href = n.href;
+    a.style.setProperty('--n', COLOR[n.group] || COLOR.ai);
+    a.innerHTML = '<i aria-hidden="true"></i>' + n.label;
+    a.setAttribute('aria-label', n.label + ' — ' + n.tech.slice(0, 4).join(', '));
+    a.addEventListener('pointerenter', () => setHover(i));
+    a.addEventListener('pointerleave', () => setHover(-1));
+    a.addEventListener('focus', () => setHover(i));
+    a.addEventListener('blur', () => setHover(-1));
+    // Visual ripple; navigation still happens via the href.
+    a.addEventListener('click', () => ripple(n));
+    n.el = a;
+    frag.appendChild(a);
+  });
+  root.appendChild(frag);
+
+  function measure() {
+    nodes.forEach(n => {
+      n.hw = n.el.offsetWidth / 2 || 46;
+      n.hh = n.el.offsetHeight / 2 || 13;
+    });
+  }
+  measure();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+
+  /* ---------- state ---------- */
+  let W = 0, H = 0, cx = 0, cy = 0, rx = 0, ry = 0, hubR = 76, dpr = 1;
+  let hover = -1, raf = null, running = false, started = 0, done = false;
+  let maxPulses = 12;
+  const neighbours = new Set();
+  const pulses = [];
+  const ripples = [];
+  const catFlash = { role: 0, ai: 0, fullstack: 0, web: 0 };
+  const pointer = { x: -9999, y: -9999, on: false };
+
+  function resize() {
+    const r = root.getBoundingClientRect();
+    if (!r.width) return;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = r.width; H = r.height;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cx = W / 2; cy = H / 2;
+    rx = W * 0.36; ry = H * 0.37;
+    hubR = (hubEl.offsetWidth || 152) / 2;
+    maxPulses = W < 380 ? 5 : W < 460 ? 8 : 12;
+    measure();
+  }
+
+  /* ---------- physics ----------
+     Positions are stored relative to the centre. Forces: a soft pull toward an
+     elliptical ring, box-aware repulsion so labels never overlap, weak springs
+     along edges, hub exclusion, and cursor repulsion. */
+  const K_RING = 0.16, K_ANG = 0.9, K_EDGE = 0.010, DAMP = 0.82;
+  const CURSOR_R = 120, CURSOR_K = 2600;
+
+  // Better-connected work sits nearer the core, which makes the settled layout
+  // mean something and gives each node a different preferred radius.
+  nodes.forEach(n => {
+    const deg = adj[n.i].size;
+    n.pref = 1.06 - Math.min(deg, 4) * 0.055;
+  });
+
+  function step() {
+    const TAU = Math.PI * 2;
+    const wantGap = (TAU / nodes.length) * 0.92;
+
+    for (const n of nodes) {
+      n.fx = 0; n.fy = 0;
+      n.ang = Math.atan2(n.y / ry, n.x / rx);
+      n.ud = Math.hypot(n.x / rx, n.y / ry) || 0.0001;
+    }
+
+    for (const n of nodes) {
+      const ca = Math.cos(n.ang), sa = Math.sin(n.ang);
+
+      // radial: settle onto its preferred ring
+      const pull = (n.ud - n.pref) * K_RING * 100;
+      n.fx -= ca * pull;
+      n.fy -= sa * pull;
+
+      // angular: spread evenly around the core (this is what stops the
+      // simulation collapsing into a lopsided clump)
+      for (const m of nodes) {
+        if (m === n) continue;
+        let da = n.ang - m.ang;
+        while (da > Math.PI) da -= TAU;
+        while (da < -Math.PI) da += TAU;
+        const mag = Math.abs(da);
+        if (mag < wantGap && mag > 0.0001) {
+          const f = (wantGap - mag) / wantGap * K_ANG * (da > 0 ? 1 : -1);
+          n.fx += -sa * f * rx * 0.09;
+          n.fy += ca * f * ry * 0.09;
+        }
+      }
+
+      // keep clear of the core
+      const d = Math.hypot(n.x, n.y) || 0.0001;
+      const minD = hubR + n.hw * 0.55 + 26;
+      if (d < minD) {
+        const push = (minD - d) * 0.5;
+        n.fx += (n.x / d) * push;
+        n.fy += (n.y / d) * push;
+      }
+
+      // cursor repulsion
+      if (pointer.on) {
+        const dx = n.x - pointer.x, dy = n.y - pointer.y;
+        const pd = Math.hypot(dx, dy);
+        if (pd < CURSOR_R && pd > 0.01) {
+          const f = (1 - pd / CURSOR_R) * (CURSOR_K / (pd + 40));
+          n.fx += (dx / pd) * f;
+          n.fy += (dy / pd) * f;
+        }
+      }
+    }
+
+    // box-aware separation so labels never overlap
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i], b = nodes[j];
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const needX = a.hw + b.hw + 12;
+        const needY = a.hh + b.hh + 14;
+        const ox = needX - Math.abs(dx), oy = needY - Math.abs(dy);
+        if (ox > 0 && oy > 0) {
+          if (ox / needX < oy / needY) {
+            const p = ox * 0.11 * ((dx || 0.01) > 0 ? 1 : -1);
+            a.fx -= p; b.fx += p;
+          } else {
+            const p = oy * 0.11 * ((dy || 0.01) > 0 ? 1 : -1);
+            a.fy -= p; b.fy += p;
+          }
+        }
+      }
+    }
+
+    // weak springs: connected work drifts a little closer together
+    for (const e of edges) {
+      const a = nodes[e.a], b = nodes[e.b];
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const d = Math.hypot(dx, dy) || 0.0001;
+      const f = (d - Math.min(rx, ry) * 1.1) * K_EDGE;
+      a.fx += (dx / d) * f; a.fy += (dy / d) * f;
+      b.fx -= (dx / d) * f; b.fy -= (dy / d) * f;
+    }
+
+    for (const n of nodes) {
+      n.vx = (n.vx + n.fx) * DAMP;
+      n.vy = (n.vy + n.fy) * DAMP;
+      const sp = Math.hypot(n.vx, n.vy);
+      if (sp > 12) { n.vx = n.vx / sp * 12; n.vy = n.vy / sp * 12; }
+      n.x += n.vx; n.y += n.vy;
+
+      const limX = W / 2 - n.hw - 4, limY = H / 2 - n.hh - 4;
+      if (n.x > limX) { n.x = limX; n.vx *= -0.35; }
+      if (n.x < -limX) { n.x = -limX; n.vx *= -0.35; }
+      if (n.y > limY) { n.y = limY; n.vy *= -0.35; }
+      if (n.y < -limY) { n.y = -limY; n.vy *= -0.35; }
+    }
+  }
+
+  /* ---------- interaction ---------- */
+  function setHover(i) {
+    hover = i;
+    neighbours.clear();
+    if (i >= 0) adj[i].forEach(k => neighbours.add(k));
+    nodes.forEach((n, k) => {
+      const lit = i < 0 || k === i || neighbours.has(k);
+      n.el.classList.toggle('is-dim', !lit);
+      n.el.classList.toggle('is-lit', i >= 0 && neighbours.has(k));
+    });
+    if (!running) render(performance.now());
+  }
+
+  function ripple(n) {
+    ripples.push({ x: n.x, y: n.y, t: 0, col: rgb[n.group] || rgb.ai });
+  }
+
+  /* ---------- signals ---------- */
+  function spawn() {
+    if (pulses.length >= maxPulses) return;
+    // Mostly core -> node, sometimes node -> node along a shared-tech edge.
+    if (edges.length && Math.random() < 0.55) {
+      const e = edges[(Math.random() * edges.length) | 0];
+      const flip = Math.random() < 0.5;
+      pulses.push({ a: flip ? e.a : e.b, b: flip ? e.b : e.a, t: 0,
+                    sp: 0.008 + Math.random() * 0.01, col: rgb[nodes[flip ? e.b : e.a].group] });
+    } else {
+      const i = (Math.random() * nodes.length) | 0;
+      const out = Math.random() < 0.7;
+      pulses.push({ a: out ? -1 : i, b: out ? i : -1, t: 0,
+                    sp: 0.007 + Math.random() * 0.009, col: rgb[nodes[i].group] });
+    }
+  }
+
+  const pos = i => (i < 0 ? { x: 0, y: 0 } : { x: nodes[i].rx, y: nodes[i].ry });
+
+  /* ---------- render ---------- */
+  function render(now) {
+    // The clock only starts once the section has been seen, so the entrance
+    // actually plays instead of snapping to finished while it sat offscreen.
+    const t = started ? (now - started) * 0.001 : 0;
+    // Insurance: if rAF is throttled hard, never leave it half-drawn.
+    if (started && now - started > 4000) done = true;
+    if (!reduceMotion) step();
+
+    // entrance + idle bob -> final render positions
+    nodes.forEach((n, i) => {
+      const e = (reduceMotion || done) ? 1 : clamp((t - i * 0.07) / 0.9, 0, 1);
+      n.enter = 1 - Math.pow(1 - e, 3);
+      const bx = reduceMotion ? 0 : Math.sin(t * n.period + n.phase) * n.bob;
+      const by = reduceMotion ? 0 : Math.cos(t * n.period * 0.8 + n.phase) * n.bob;
+      n.rx = (n.x + bx) * n.enter;
+      n.ry = (n.y + by) * n.enter;
+      n.flash *= 0.93;
+
+      const glow = Math.min(1, n.flash);
+      n.el.style.transform =
+        'translate3d(' + (cx + n.rx).toFixed(1) + 'px,' + (cy + n.ry).toFixed(1) + 'px,0) ' +
+        'translate(-50%,-50%) scale(' + (0.6 + 0.4 * n.enter).toFixed(3) + ')';
+      n.el.style.opacity = n.enter.toFixed(3);
+      n.el.style.setProperty('--flash', glow.toFixed(3));
+    });
+
+    // legend dots follow their category
+    for (const k in catFlash) catFlash[k] *= 0.93;
+    nodes.forEach(n => { catFlash[n.group] = Math.max(catFlash[n.group], n.flash); });
+    legendDots.forEach(d => {
+      const v = catFlash[d.dataset.group] || 0;
+      d.style.transform = 'scale(' + (1 + v * 0.7).toFixed(3) + ')';
+      d.style.opacity = (0.55 + v * 0.45).toFixed(3);
+    });
+
+    const hubGlow = Math.min(1, catFlash.role + catFlash.ai * 0.5);
+    hubEl.style.setProperty('--flash', hubGlow.toFixed(3));
+
+    /* ---- canvas ---- */
+    ctx.clearRect(0, 0, W, H);
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    // core spokes
+    nodes.forEach((n, i) => {
+      const on = hover < 0 || hover === i || neighbours.has(i);
+      ctx.strokeStyle = 'rgba(150,150,205,' + (on ? 0.15 : 0.04) * n.enter + ')';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(n.rx, n.ry);
+      ctx.stroke();
+    });
+
+    // shared-tech axons
+    edges.forEach(e => {
+      const a = nodes[e.a], b = nodes[e.b];
+      const on = hover === e.a || hover === e.b;
+      const base = hover < 0 ? 0.1 + e.w * 0.04 : on ? 0.5 : 0.025;
+      const c = on ? rgb[a.group] : [140, 140, 195];
+      ctx.strokeStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + base * a.enter * b.enter + ')';
+      ctx.lineWidth = on ? 1.5 : 1;
+      ctx.beginPath();
+      ctx.moveTo(a.rx, a.ry);
+      ctx.lineTo(b.rx, b.ry);
+      ctx.stroke();
+    });
+
+    // travelling signals
+    if (!reduceMotion) {
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = pulses.length - 1; i >= 0; i--) {
+        const p = pulses[i];
+        p.t += p.sp;
+        const A = pos(p.a), B = pos(p.b);
+        if (p.t >= 1) {
+          if (p.b >= 0) nodes[p.b].flash = 1;
+          else catFlash.role = Math.max(catFlash.role, 0.9);
+          pulses.splice(i, 1);
+          continue;
+        }
+        const x = A.x + (B.x - A.x) * p.t;
+        const y = A.y + (B.y - A.y) * p.t;
+        const fade = Math.sin(p.t * Math.PI);
+        const c = p.col;
+
+        // brighten the wire just behind the pulse
+        const tb = Math.max(0, p.t - 0.16);
+        ctx.strokeStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + 0.5 * fade + ')';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(A.x + (B.x - A.x) * tb, A.y + (B.y - A.y) * tb);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + 0.16 * fade + ')';
+        ctx.beginPath(); ctx.arc(x, y, 8, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + fade + ')';
+        ctx.beginPath(); ctx.arc(x, y, 2.3, 0, Math.PI * 2); ctx.fill();
+      }
+
+      // click ripples
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const r = ripples[i];
+        r.t += 0.028;
+        if (r.t >= 1) { ripples.splice(i, 1); continue; }
+        const c = r.col;
+        ctx.strokeStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (1 - r.t) * 0.7 + ')';
+        ctx.lineWidth = 2 * (1 - r.t);
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, 10 + r.t * 90, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.globalCompositeOperation = 'source-over';
+    }
+
+    ctx.restore();
+    if (running) raf = requestAnimationFrame(render);
+  }
+
+  /* ---------- lifecycle ---------- */
+  function start() {
+    if (running || reduceMotion) return;
+    if (!started) {
+      started = performance.now();                  // first sight = entrance
+      // rAF can be starved (background tab, low-power, headless). This timer
+      // guarantees the entrance lands regardless of whether frames arrive.
+      setTimeout(() => { if (!done) { done = true; render(performance.now()); } }, 2400);
+    }
+    running = true;
+    raf = requestAnimationFrame(render);
+  }
+  function stop() {
+    running = false;
+    if (raf) cancelAnimationFrame(raf);
+    raf = null;
+    // If we're pausing part-way through the entrance, land it rather than
+    // freezing half-transparent nodes on screen.
+    if (started && !done) { done = true; render(performance.now()); }
+  }
+
+  resize();
+  // Pre-warm so the entrance springs out to a settled layout, not a scramble.
+  for (let i = 0; i < 320; i++) step();
+  render(performance.now());
+
+  if (!reduceMotion) {
+    root.addEventListener('pointermove', e => {
+      const r = root.getBoundingClientRect();
+      pointer.x = e.clientX - r.left - cx;
+      pointer.y = e.clientY - r.top - cy;
+      pointer.on = true;
+    });
+    root.addEventListener('pointerleave', () => { pointer.on = false; });
+    setInterval(() => { if (running) spawn(); }, 340);
+  }
+
+  let rt;
+  window.addEventListener('resize', () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => {
+      resize();
+      for (let i = 0; i < 120; i++) step();
+      render(performance.now());
+    }, 150);
+  });
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([e]) => { e.isIntersecting ? start() : stop(); }, { threshold: 0 })
+      .observe(root);
+  } else start();
+  document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+})();
+
 /* ===== 11b. GITHUB ACTIVITY PANEL =====
    Paints immediately from the snapshot inlined in index.html (works offline and
    over file://), then refreshes the calendar in the background. Only the

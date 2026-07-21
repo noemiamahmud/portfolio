@@ -1044,47 +1044,6 @@ h1, h2, h3, h4 {
   align-items: start;
 }
 
-.portrait {
-  position: relative;
-  border-radius: var(--r-lg);
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--bg-2);
-  aspect-ratio: 4 / 5;
-  isolation: isolate;
-}
-.portrait img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  filter: saturate(0.9) contrast(1.03);
-  transition: transform 0.9s var(--e-out), filter 0.6s;
-}
-.portrait:hover img { transform: scale(1.05); filter: saturate(1.05) contrast(1.06); }
-.portrait::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(160deg, transparent 40%, color-mix(in srgb, var(--a1) 26%, transparent));
-  mix-blend-mode: overlay;
-  pointer-events: none;
-}
-.portrait-badge {
-  position: absolute;
-  left: 14px; bottom: 14px;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 9px 15px;
-  border-radius: 999px;
-  background: rgba(8, 8, 14, 0.62);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #fff;
-  font-family: var(--f-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
-}
 
 .about-facts {
   display: grid;
@@ -1109,6 +1068,221 @@ h1, h2, h3, h4 {
   margin-bottom: 6px;
 }
 .about-facts dd { font-size: 0.92rem; font-weight: 500; }
+
+/* ===== 10b. WORK CONSTELLATION =====
+   Nodes are real projects and roles; edges mean shared technology.
+   Positions are written to transforms by JS each frame; the canvas draws
+   only the edges underneath. */
+.workgraph {
+  position: relative;
+  width: 100%;
+  max-width: 470px;
+  aspect-ratio: 4 / 5;
+  margin-inline: auto;
+  user-select: none;
+  /* somewhere for the glow to live */
+  background:
+    radial-gradient(circle at 50% 50%,
+      color-mix(in srgb, var(--a1) 13%, transparent) 0%,
+      color-mix(in srgb, var(--a2) 6%, transparent) 34%,
+      transparent 68%);
+}
+.wg-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.wg-hub {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 152px; height: 152px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  background:
+    radial-gradient(circle at 50% 45%,
+      color-mix(in srgb, var(--a1) 16%, transparent) 0%,
+      color-mix(in srgb, var(--bg-1) 92%, transparent) 62%,
+      var(--bg-1) 100%);
+  box-shadow:
+    0 0 0 calc(7px + var(--flash, 0) * 6px) color-mix(in srgb, var(--a1) calc(8% + var(--flash, 0) * 14%), transparent),
+    0 22px 50px -18px rgba(0, 0, 0, 0.75);
+  transition: box-shadow 0.25s linear;
+  will-change: box-shadow;
+}
+
+/* ---- split brain mark ---- */
+.brainmark { width: 100%; height: 100%; overflow: visible; }
+.brainmark path,
+.brainmark line,
+.brainmark circle { vector-effect: non-scaling-stroke; }
+
+.bm-ring {
+  fill: none;
+  stroke: var(--line-2);
+  stroke-width: 1;
+  stroke-dasharray: 3 7;
+  transform-origin: 50% 50%;
+  animation: bmSpin 26s linear infinite;
+}
+.bm-shell { stroke-width: 1.4; }
+.bm-shell--organic { stroke: color-mix(in srgb, var(--a2) 75%, transparent); }
+.bm-shell--circuit { stroke: color-mix(in srgb, var(--a1) 75%, transparent); }
+
+/* Permanent structure — always readable as a brain, never mid-draw. */
+.bm-struct use {
+  fill: none;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.45;
+}
+.bm-struct--organic use { stroke: var(--a2); }
+.bm-struct--circuit use { stroke: var(--a1); }
+
+/* Signal travelling along that structure. */
+.bm-spark use {
+  fill: none;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 12 88;      /* pathLength is normalised to 100 */
+  stroke-dashoffset: 100;
+  animation: bmSpark 2.8s linear infinite;
+}
+.bm-spark--organic use { stroke: var(--a2); }
+.bm-spark--circuit use { stroke: var(--a1); }
+.bm-spark use:nth-child(2) { animation-delay: 0.7s; }
+.bm-spark use:nth-child(3) { animation-delay: 1.4s; }
+.bm-spark use:nth-child(4) { animation-delay: 2.1s; }
+.bm-spark--circuit use { animation-duration: 2.4s; }
+
+.bm-nodes circle {
+  fill: var(--a1);
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: bmPulse 2.6s var(--e-io) infinite;
+}
+.bm-nodes circle:nth-child(2) { animation-delay: 0.65s; }
+.bm-nodes circle:nth-child(3) { animation-delay: 1.3s; }
+.bm-nodes circle:nth-child(4) { animation-delay: 1.95s; }
+.bm-vias circle { fill: var(--a1); opacity: 0.5; }
+
+.bm-seam {
+  stroke: var(--line-2);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+
+@keyframes bmSpin { to { transform: rotate(360deg); } }
+@keyframes bmSpark { to { stroke-dashoffset: 0; } }
+@keyframes bmPulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.5); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bm-ring, .bm-nodes circle { animation: none; }
+  .bm-spark { display: none; }
+  .bm-struct use { opacity: 0.85; }
+}
+
+.wg-node {
+  position: absolute;
+  left: 0; top: 0;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--n) calc(22% + var(--flash, 0) * 55%), var(--line));
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--n) calc(7% + var(--flash, 0) * 12%), transparent),
+      transparent),
+    color-mix(in srgb, var(--bg-1) 84%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    0 0 calc(10px + var(--flash, 0) * 26px) calc(var(--flash, 0) * -2px)
+      color-mix(in srgb, var(--n) calc(18% + var(--flash, 0) * 52%), transparent),
+    0 6px 18px -10px rgba(0, 0, 0, 0.7);
+  font-size: 0.73rem;
+  font-weight: 500;
+  color: var(--tx-2);
+  white-space: nowrap;
+  cursor: pointer;
+  will-change: transform, opacity;
+  transition: color 0.25s, opacity 0.35s;
+}
+.wg-node i {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--n, var(--a1));
+  flex-shrink: 0;
+  box-shadow: 0 0 calc(6px + var(--flash, 0) * 12px) var(--n, var(--a1));
+  transform: scale(calc(1 + var(--flash, 0) * 0.45));
+}
+.wg-node:hover,
+.wg-node:focus-visible,
+.wg-node.is-lit {
+  color: var(--tx);
+  border-color: var(--n, var(--a1));
+  box-shadow:
+    0 0 26px -4px color-mix(in srgb, var(--n, var(--a1)) 55%, transparent),
+    0 0 0 4px color-mix(in srgb, var(--n, var(--a1)) 12%, transparent);
+}
+.wg-node.is-dim { opacity: 0.26 !important; }
+
+/* Legend under the graph */
+.wg-key {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+  margin-top: 18px;
+}
+.wg-key span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--f-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--tx-3);
+}
+.wg-key i {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  opacity: 0.55;
+  will-change: transform, opacity;
+}
+.wg-hint {
+  margin-top: 8px;
+  text-align: center;
+  font-family: var(--f-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  color: var(--tx-3);
+  opacity: 0.75;
+}
+
+@media (max-width: 1024px) {
+  .workgraph { max-width: 420px; }
+}
+@media (max-width: 480px) {
+  .workgraph { max-width: 340px; }
+  .wg-hub { width: 112px; height: 112px; }
+  .wg-node { font-size: 0.66rem; padding: 5px 9px; gap: 5px; }
+}
 
 /* ===== 11. TIMELINE ===== */
 .timeline { position: relative; }
