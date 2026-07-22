@@ -472,8 +472,6 @@ function raf(fn) {
 const workGraph = [
   { label: 'Brookhaven',   group: 'role', href: '#experience',
     tech: ['LangGraph', 'MCP', 'LangSmith', 'vLLM', 'Python', 'PyTorch'] },
-  { label: 'Jocasta',      group: 'role', href: '#experience',
-    tech: ['Python', 'Genomics', 'AI Pipelines'] },
   { label: 'RAG Health',   group: 'ai', href: 'projects.html#rag-chatbot',
     tech: ['RAG', 'Qdrant', 'Embeddings', 'Python', 'React', 'Flask'] },
   { label: 'Rat Behavior', group: 'ai', href: 'projects.html#deeplabcut',

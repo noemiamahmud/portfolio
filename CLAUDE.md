@@ -42,7 +42,7 @@ DOM chips for the labels (crisp text, focusable links) over a canvas for edges a
 
 - Nodes come from the `workGraph` array at the top of the module; `EXTRA_EDGES` forces extra
   links by label. **Edges are derived, not authored**: two nodes link when they share at least
-  `MIN_SHARED` (2) technologies. Nodes with no qualifying overlap (Jocasta, Club Sites) connect
+  `MIN_SHARED` (2) technologies. Nodes with no qualifying overlap (Club Sites) connect
   only to the hub — correct, not a bug; don't pad their `tech` lists to force edges.
 - **Layout is force-directed but includes an angular spreading term.** That term is load-bearing:
   with only radial + repulsion + edge springs the simulation reliably collapses into a lopsided
