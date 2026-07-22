@@ -1857,7 +1857,7 @@ const Modal = (function () {
     },
     {
       group: 'Actions', label: 'Open résumé', icon: ico.action,
-      run: () => window.open('https://drive.google.com/file/d/1-hcP-M_0-Olb3beNFadOHWqhC8aBBnCv/view?usp=sharing', '_blank', 'noopener')
+      run: () => window.open('https://drive.google.com/file/d/1A1NljpuVGNJXSzq9t0e5LR1JS9-0WDPu/view?usp=sharing', '_blank', 'noopener')
     },
     { group: 'Actions', label: 'GitHub profile',   icon: ico.action, run: () => window.open('https://github.com/noemiamahmud', '_blank', 'noopener') },
     { group: 'Actions', label: 'LinkedIn profile', icon: ico.action, run: () => window.open('https://www.linkedin.com/in/noemia-mahmud-71b5b82b6/', '_blank', 'noopener') },
